@@ -1,21 +1,39 @@
 /**
- * Central registry for the site's background and testimonial videos.
- * Each clip is stored as a CDN asset pointer so large media never lives in the repo.
+ * Canonical media URLs for the public site.
+ * These local public paths are production-safe and work reliably across Vercel,
+ * browsers, and mobile Safari without depending on generated Lovable asset URLs.
  */
-import heroAsset from "@/assets/videos/hero.mp4.asset.json";
-import servicesAsset from "@/assets/videos/services.mp4.asset.json";
-import craftsmanshipAsset from "@/assets/videos/craftsmanship.mp4.asset.json";
-import carpentryAsset from "@/assets/videos/carpentry.mp4.asset.json";
-import paintingAsset from "@/assets/videos/painting.mp4.asset.json";
-import exteriorAsset from "@/assets/videos/exterior.mp4.asset.json";
-import testimonialsAsset from "@/assets/videos/testimonials.mp4.asset.json";
-import contactAsset from "@/assets/videos/contact.mp4.asset.json";
 
-export const heroVideoUrl = heroAsset.url;
-export const servicesVideoUrl = servicesAsset.url;
-export const craftsmanshipVideoUrl = craftsmanshipAsset.url;
-export const carpentryVideoUrl = carpentryAsset.url;
-export const paintingVideoUrl = paintingAsset.url;
-export const exteriorVideoUrl = exteriorAsset.url;
-export const testimonialsVideoUrl = testimonialsAsset.url;
-export const contactVideoUrl = contactAsset.url;
+const LOCAL_MEDIA = {
+  hero: "/videos/hero.mp4",
+  services: "/videos/services.mp4",
+  craftsmanship: "/videos/craftsmanship.mp4",
+  carpentry: "/videos/carpentry.mp4",
+  painting: "/videos/painting.mp4",
+  exterior: "/videos/exterior.mp4",
+  testimonials: "/videos/testimonials.mp4",
+  contact: "/videos/contact.mp4",
+} as const;
+
+export function resolveMediaUrl(value: string | null | undefined, fallback: string): string {
+  if (!value || typeof value !== "string") return fallback;
+
+  const trimmed = value.trim();
+  if (!trimmed) return fallback;
+
+  const blockedPatterns = ["/__l5e/", "assets-v1", "lovable.dev", "localhost", "127.0.0.1"];
+  if (blockedPatterns.some((pattern) => trimmed.toLowerCase().includes(pattern.toLowerCase()))) {
+    return fallback;
+  }
+
+  return trimmed;
+}
+
+export const heroVideoUrl = LOCAL_MEDIA.hero;
+export const servicesVideoUrl = LOCAL_MEDIA.services;
+export const craftsmanshipVideoUrl = LOCAL_MEDIA.craftsmanship;
+export const carpentryVideoUrl = LOCAL_MEDIA.carpentry;
+export const paintingVideoUrl = LOCAL_MEDIA.painting;
+export const exteriorVideoUrl = LOCAL_MEDIA.exterior;
+export const testimonialsVideoUrl = LOCAL_MEDIA.testimonials;
+export const contactVideoUrl = LOCAL_MEDIA.contact;

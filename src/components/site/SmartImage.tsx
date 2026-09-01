@@ -1,5 +1,4 @@
-import { useState, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface SmartImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -23,20 +22,8 @@ export function SmartImage({
 }: SmartImageProps) {
   const [loaded, setLoaded] = useState(false);
 
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-
   return (
-    <div 
-      ref={ref}
-      className={cn("relative overflow-hidden group/image", wrapperClassName)}
-    >
+    <div className={cn("relative overflow-hidden group/image", wrapperClassName)}>
       <div
         aria-hidden="true"
         className={cn(
@@ -44,22 +31,22 @@ export function SmartImage({
           loaded ? "opacity-0" : "opacity-100",
         )}
       />
-      <motion.img
-        style={{ y, scale } as any}
+      <img
         src={src}
         alt={alt}
         loading={priority ? "eager" : "lazy"}
         decoding="async"
+        fetchPriority={priority ? "high" : "auto"}
         onLoad={() => setLoaded(true)}
         onError={() => setLoaded(true)}
         className={cn(
-          "transition-opacity duration-700 w-full h-full object-cover", 
-          loaded ? "opacity-100" : "opacity-0", 
-          className
+          "h-full w-full object-cover transition-opacity duration-700",
+          loaded ? "opacity-100" : "opacity-0",
+          className,
         )}
         {...(rest as any)}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-500 group-hover/image:opacity-100" />
     </div>
   );
 }

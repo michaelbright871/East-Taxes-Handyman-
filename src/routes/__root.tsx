@@ -3,6 +3,7 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  useLocation,
   useRouter,
   HeadContent,
   Scripts,
@@ -17,11 +18,19 @@ import { AuthProvider } from "../hooks/useAuth";
 import { ChatWidget } from "../components/chat/ChatWidget";
 import { BookingProvider } from "../components/site/booking/BookingProvider";
 import { FloatingHub } from "../components/site/FloatingHub";
-import { SmoothScroll } from "../components/site/effects/SmoothScroll";
+import { resetSmoothScroll, SmoothScroll } from "../components/site/effects/SmoothScroll";
 import { ThreeScene } from "../components/site/effects/ThreeScene";
 
 
 function NotFoundComponent() {
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    window.location.href = "/";
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
@@ -31,12 +40,13 @@ function NotFoundComponent() {
           The page you're looking for doesn't exist or has been moved.
         </p>
         <div className="mt-6">
-          <Link
-            to="/"
+          <button
+            type="button"
+            onClick={handleBack}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
-          </Link>
+            Go back
+          </button>
         </div>
       </div>
     </div>
@@ -139,6 +149,30 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+
+  useEffect(() => {
+    const reset = () => {
+      const root = document.scrollingElement ?? document.body;
+      if (root) {
+        root.scrollTop = 0;
+        root.scrollLeft = 0;
+      }
+      resetSmoothScroll();
+
+      if (location.hash) {
+        const id = location.hash.replace(/^#/, "");
+        window.requestAnimationFrame(() => {
+          const target = document.getElementById(id);
+          if (target) {
+            target.scrollIntoView({ block: "start", inline: "nearest" });
+          }
+        });
+      }
+    };
+
+    window.requestAnimationFrame(reset);
+  }, [location.pathname, location.search, location.hash]);
 
   return (
     <QueryClientProvider client={queryClient}>

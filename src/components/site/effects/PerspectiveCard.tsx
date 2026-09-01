@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import React from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface PerspectiveCardProps {
   children: React.ReactNode;
@@ -18,8 +19,8 @@ export function PerspectiveCard({ children, className }: PerspectiveCardProps) {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
+    const width = rect.width || 1;
+    const height = rect.height || 1;
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
@@ -44,9 +45,9 @@ export function PerspectiveCard({ children, className }: PerspectiveCardProps) {
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      className={className}
+      className={cn("w-full max-w-full overflow-hidden", className)}
     >
-      <div style={{ transform: "translateZ(20px)" }}>
+      <div style={{ transform: "translateZ(20px)" }} className="w-full max-w-full">
         {children}
       </div>
     </motion.div>

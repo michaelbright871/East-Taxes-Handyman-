@@ -35,14 +35,14 @@ export function ReviewCarousel({ reviews = googleReviews }: { reviews?: Customer
 
   return (
     <div
-      className="relative"
+      className="relative w-full max-w-full min-w-0"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div className="overflow-hidden rounded-lg border border-border bg-card glass-dark shadow-depth">
-        <div className="flex">
+      <div className="w-full max-w-full overflow-hidden rounded-lg border border-border bg-card glass-dark shadow-depth">
+        <div className="flex w-full max-w-full">
           <AnimatePresence mode="wait">
             <motion.article 
               key={currentReview.id} 

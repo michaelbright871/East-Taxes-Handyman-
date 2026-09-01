@@ -25,14 +25,14 @@ export function GoogleReviews() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-12">
+        <div className="mt-14 grid gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-12">
           {/* Rating summary */}
-          <PerspectiveCard>
+          <PerspectiveCard className="w-full max-w-full min-w-0">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="min-w-0 rounded-lg border border-border bg-card p-7 glass-dark shadow-depth"
+              className="w-full min-w-0 max-w-full rounded-lg border border-border bg-card p-7 glass-dark shadow-depth"
             >
             <div className="flex items-center gap-3">
               <GoogleMark />
@@ -99,7 +99,7 @@ export function GoogleReviews() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="min-w-0"
+            className="w-full min-w-0 max-w-full"
           >
             <ReviewCarousel />
           </motion.div>

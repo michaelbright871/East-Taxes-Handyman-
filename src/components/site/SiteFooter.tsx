@@ -1,4 +1,5 @@
-import { Hammer, MapPin, Navigation, Phone } from "lucide-react";
+import { MapPin, Navigation, Phone } from "lucide-react";
+import logoUrl from "@/assets/logo.png";
 import { business, serviceAreas } from "./business";
 
 const services = [
@@ -20,9 +21,13 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-4 lg:px-8">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-md bg-brand text-brand-foreground">
-              <Hammer className="size-5" />
-            </span>
+            <img
+              src={logoUrl}
+              alt={`${business.name} logo`}
+              width={48}
+              height={48}
+              className="h-10 w-10 shrink-0 object-contain"
+            />
             <span className="font-display text-lg uppercase tracking-wide">{business.name}</span>
           </div>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-surface-foreground/70">

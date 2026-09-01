@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -116,9 +116,22 @@ export function BookingDialog({
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      if (dialogRef.current) {
+        dialogRef.current.scrollTop = 0;
+        dialogRef.current.scrollLeft = 0;
+      }
+      if (contentRef.current) {
+        contentRef.current.scrollTop = 0;
+      }
+    });
+
     setForm({
       ...initialState(mode),
       services: presetServiceId ? [presetServiceId] : [],
@@ -127,7 +140,19 @@ export function BookingDialog({
     setError(null);
     setBookingId(null);
     setSubmitting(false);
+
+    return () => window.cancelAnimationFrame(frame);
   }, [open, mode, presetServiceId]);
+
+  useEffect(() => {
+    if (!open) return;
+    const frame = window.requestAnimationFrame(() => {
+      if (contentRef.current) {
+        contentRef.current.scrollTop = 0;
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open, step]);
 
   const needsSchedule = mode !== "estimate";
   const steps = useMemo(
@@ -202,6 +227,288 @@ export function BookingDialog({
     setStep((s) => Math.max(s - 1, 0));
   };
 
+  const renderStepPanel = (index: number) => {
+    const label = steps[index];
+
+    if (label === "Services") {
+      return (
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+              Service selection
+            </p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Choose the tasks you need completed so we can bundle the visit efficiently.
+            </p>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            {serviceCatalog.map((service) => {
+              const active = form.services.includes(service.id);
+              return (
+                <button
+                  key={service.id}
+                  type="button"
+                  onClick={() => toggleService(service.id)}
+                  className={cn(
+                    "flex items-center justify-between gap-3 rounded-2xl border px-3.5 py-3 text-left text-sm font-medium transition-all duration-200 active:scale-[0.99]",
+                    active
+                      ? "border-[#0a84ff] bg-[#0a84ff]/10 text-slate-900 shadow-[0_8px_24px_rgba(10,132,255,0.12)]"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                  )}
+                >
+                  <span>{service.label}</span>
+                  <span
+                    className={cn(
+                      "flex size-5 shrink-0 items-center justify-center rounded-md border transition-colors",
+                      active ? "border-[#0a84ff] bg-[#0a84ff] text-white" : "border-slate-300 bg-white",
+                    )}
+                  >
+                    {active && <CheckCircle2 className="size-3.5" />}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    if (label === "Project details") {
+      return (
+        <div className="space-y-5">
+          <OptionGroup
+            label="Property type"
+            options={propertyTypes.map((p) => ({ id: p.id, label: p.label }))}
+            value={form.propertyType}
+            onChange={(v) => update("propertyType", v as PropertyTypeId)}
+          />
+          <OptionGroup
+            label="Project size"
+            options={projectSizes.map((s) => ({ id: s.id, label: s.label }))}
+            value={form.size}
+            onChange={(v) => update("size", v as ProjectSizeId)}
+            columns
+          />
+          <OptionGroup
+            label="Repair complexity"
+            options={complexities.map((c) => ({ id: c.id, label: c.label }))}
+            value={form.complexity}
+            onChange={(v) => update("complexity", v as ComplexityId)}
+            columns
+          />
+          <OptionGroup
+            label="Urgency"
+            options={urgencies.map((u) => ({ id: u.id, label: u.label, note: u.note }))}
+            value={form.urgency}
+            onChange={(v) => update("urgency", v as UrgencyId)}
+          />
+          {estimate && <EstimatePanel estimate={estimate} />}
+        </div>
+      );
+    }
+
+    if (label === "Schedule") {
+      return (
+        <div className="space-y-5">
+          <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+            <Label htmlFor="booking-date" className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+              Preferred date
+            </Label>
+            <Input
+              id="booking-date"
+              type="date"
+              min={today()}
+              value={form.date}
+              onChange={(event) => update("date", event.target.value)}
+              className="mt-3 h-12 rounded-xl border-slate-200 bg-white px-3 text-base"
+            />
+          </div>
+
+          <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+            <Label className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+              Available time slots
+            </Label>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {timeSlots.map((slot) => (
+                <button
+                  key={slot}
+                  type="button"
+                  onClick={() => update("timeSlot", slot)}
+                  className={cn(
+                    "rounded-xl border px-3.5 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.99]",
+                    form.timeSlot === slot
+                      ? "border-[#0a84ff] bg-[#0a84ff]/10 text-slate-900"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                  )}
+                >
+                  {slot}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {isEmergency && (
+            <p className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 p-3 text-xs leading-5 text-slate-700">
+              <AlertTriangle className="mt-0.5 size-4 shrink-0 text-red-600" />
+              For active leaks, storm damage or safety hazards, call{" "}
+              <a href={business.phoneHref} className="font-semibold underline underline-offset-2">
+                {business.phone}
+              </a>{" "}
+              right away — we'll respond faster by phone.
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    if (label === "Photos & address") {
+      return (
+        <div className="space-y-5">
+          <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+            <Label htmlFor="booking-address" className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+              Property address
+            </Label>
+            <Input
+              id="booking-address"
+              placeholder="123 Pine St, Longview, TX 75604"
+              value={form.address}
+              onChange={(event) => update("address", event.target.value)}
+              className="mt-3 h-12 rounded-xl border-slate-200 bg-white px-3 text-base"
+            />
+          </div>
+
+          <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+            <Label className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+              Project photos (optional)
+            </Label>
+            <div className="mt-3">
+              <PhotoUpload
+                photos={form.photos}
+                onChange={(photos) => update("photos", photos)}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+            <Label htmlFor="booking-notes" className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+              Project notes
+            </Label>
+            <Textarea
+              id="booking-notes"
+              rows={4}
+              placeholder="Anything we should know — access, materials, timing, problem history."
+              value={form.notes}
+              onChange={(event) => update("notes", event.target.value)}
+              className="mt-3 min-h-[110px] rounded-2xl border-slate-200 bg-white px-3 py-3 text-base"
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (label === "Your details") {
+      return (
+        <div className="space-y-5">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+              <Label htmlFor="booking-name" className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+                Full name
+              </Label>
+              <Input
+                id="booking-name"
+                value={form.name}
+                onChange={(event) => update("name", event.target.value)}
+                placeholder="Jane Doe"
+                className="mt-3 h-12 rounded-xl border-slate-200 bg-white px-3 text-base"
+              />
+            </div>
+            <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+              <Label htmlFor="booking-phone" className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+                Phone
+              </Label>
+              <Input
+                id="booking-phone"
+                type="tel"
+                value={form.phone}
+                onChange={(event) => update("phone", event.target.value)}
+                placeholder="(903) 555-0134"
+                className="mt-3 h-12 rounded-xl border-slate-200 bg-white px-3 text-base"
+              />
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+            <Label htmlFor="booking-email" className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+              Email
+            </Label>
+            <Input
+              id="booking-email"
+              type="email"
+              value={form.email}
+              onChange={(event) => update("email", event.target.value)}
+              placeholder="you@email.com"
+              className="mt-3 h-12 rounded-xl border-slate-200 bg-white px-3 text-base"
+            />
+          </div>
+
+          <OptionGroup
+            label="Preferred contact method"
+            options={[
+              { id: "Phone call", label: "Phone call" },
+              { id: "Text message", label: "Text message" },
+              { id: "Email", label: "Email" },
+            ]}
+            value={form.preferredContact}
+            onChange={(v) => update("preferredContact", v as FormState["preferredContact"])}
+          />
+        </div>
+      );
+    }
+
+    if (label === "Review") {
+      return (
+        <div className="space-y-5">
+          {estimate && <EstimatePanel estimate={estimate} />}
+          <dl className="divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <SummaryRow label="Services" value={form.services.map(serviceLabel).join(", ")} />
+            <SummaryRow
+              label="Property"
+              value={`${propertyTypes.find((p) => p.id === form.propertyType)!.label} · ${
+                projectSizes.find((s) => s.id === form.size)!.label
+              }`}
+            />
+            <SummaryRow label="Urgency" value={urgencies.find((u) => u.id === form.urgency)!.label} />
+            {needsSchedule && <SummaryRow label="Date & time" value={`${form.date} · ${form.timeSlot}`} />}
+            <SummaryRow label="Address" value={form.address} />
+            <SummaryRow
+              label="Contact"
+              value={`${form.name} · ${form.phone} · ${form.email} · prefers ${form.preferredContact.toLowerCase()}`}
+            />
+            {form.notes && <SummaryRow label="Notes" value={form.notes} />}
+          </dl>
+
+          {form.photos.length > 0 && (
+            <div className="rounded-2xl border border-black/5 bg-white/60 p-4">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
+                Photos ({form.photos.length})
+              </p>
+              <ul className="mt-3 grid grid-cols-4 gap-2">
+                {form.photos.map((photo) => (
+                  <li key={photo.id} className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                    <img src={photo.url} alt={photo.name} className="h-16 w-full object-cover" />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   const submit = async () => {
     setSubmitting(true);
     const id = makeBookingId();
@@ -239,316 +546,106 @@ export function BookingDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92svh] w-[calc(100vw-1.5rem)] max-w-2xl overflow-y-auto p-0">
-        <div
-          className={cn(
-            "border-b border-border px-6 py-5",
-            isEmergency ? "bg-destructive/10" : "bg-muted/40",
-          )}
-        >
-          <DialogTitle className="flex items-center gap-2 font-display text-xl uppercase tracking-wide text-foreground">
-            {isEmergency ? (
-              <AlertTriangle className="size-5 text-destructive" />
-            ) : (
-              <Sparkles className="size-5 text-brand" />
+      <DialogContent
+        ref={dialogRef}
+        className="w-[calc(100vw-0.75rem)] max-w-[560px] overflow-hidden border-0 bg-[#f5f5f7] p-0 shadow-[0_24px_80px_rgba(15,23,42,0.35)] sm:rounded-[30px]"
+      >
+        <div className="flex h-full max-h-[92svh] flex-col bg-[#f5f5f7] text-slate-900">
+          <div className="border-b border-slate-200/80 bg-[#f5f5f7]/90 px-4 pb-3 pt-[max(env(safe-area-inset-top),1rem)] backdrop-blur-xl">
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={bookingId ? () => onOpenChange(false) : back}
+                disabled={(!bookingId && step === 0) || submitting}
+                className="min-w-[72px] rounded-full px-2 py-1.5 text-left text-[17px] font-semibold text-[#ff3b30] transition-opacity disabled:opacity-40"
+              >
+                {bookingId ? "Done" : "Back"}
+              </button>
+
+              <div className="flex min-w-0 flex-1 items-center justify-center">
+                <DialogTitle className="truncate text-center text-[18px] font-semibold tracking-[-0.02em] text-slate-900">
+                  {bookingId ? "Request received" : modeCopy[mode].title}
+                </DialogTitle>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onOpenChange(false)}
+                className="min-w-[72px] rounded-full px-2 py-1.5 text-right text-[17px] font-semibold text-[#ff3b30]"
+              >
+                {bookingId ? "Close" : "Done"}
+              </button>
+            </div>
+
+            {!bookingId && (
+              <div className="mt-3">
+                <div className="flex items-center gap-1.5">
+                  {steps.map((_, index) => (
+                    <span
+                      key={index}
+                      className={cn(
+                        "h-1.5 flex-1 rounded-full transition-all duration-300",
+                        index <= step ? "bg-[#0a84ff]" : "bg-slate-200",
+                      )}
+                    />
+                  ))}
+                </div>
+                <p className="mt-2 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">
+                  {step + 1} / {steps.length} · {stepName}
+                </p>
+              </div>
             )}
-            {modeCopy[mode].title}
-          </DialogTitle>
-          <DialogDescription className="mt-1 text-sm text-muted-foreground">
-            {bookingId ? "Your request is confirmed." : modeCopy[mode].description}
-          </DialogDescription>
+          </div>
+
+          <div ref={contentRef} className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4">
+            {bookingId ? (
+              <Confirmation
+                bookingId={bookingId}
+                form={form}
+                mode={mode}
+                estimateText={estimate ? `${currency(estimate.low)} – ${currency(estimate.high)}` : null}
+                onClose={() => onOpenChange(false)}
+              />
+            ) : (
+              <div className="overflow-hidden">
+                <div
+                  className="flex w-full transition-transform duration-300 ease-out will-change-transform"
+                  style={{ transform: `translateX(-${step * 100}%)` }}
+                >
+                  {steps.map((_, index) => (
+                    <div key={steps[index]} className="w-full shrink-0 px-1">
+                      {renderStepPanel(index)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                {error}
+              </p>
+            )}
+          </div>
 
           {!bookingId && (
-            <div className="mt-4">
-              <div className="flex items-center gap-1.5">
-                {steps.map((label, index) => (
-                  <span
-                    key={label}
-                    className={cn(
-                      "h-1.5 flex-1 rounded-full transition-colors duration-300",
-                      index <= step ? "bg-brand" : "bg-border",
-                    )}
-                  />
-                ))}
-              </div>
-              <p className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">
-                Step {step + 1} of {steps.length} · {stepName}
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="px-6 py-6">
-          {bookingId ? (
-            <Confirmation
-              bookingId={bookingId}
-              form={form}
-              mode={mode}
-              estimateText={estimate ? `${currency(estimate.low)} – ${currency(estimate.high)}` : null}
-              onClose={() => onOpenChange(false)}
-            />
-          ) : (
-            <div key={stepName} className="animate-fade-up space-y-6">
-              {stepName === "Services" && (
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Select every service you need — we'll bundle them into one visit.
-                  </p>
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {serviceCatalog.map((service) => {
-                      const active = form.services.includes(service.id);
-                      return (
-                        <button
-                          key={service.id}
-                          type="button"
-                          onClick={() => toggleService(service.id)}
-                          className={cn(
-                            "flex items-center justify-between gap-3 rounded-md border px-3.5 py-3 text-left text-sm transition-colors",
-                            active
-                              ? "border-brand bg-brand/10 text-foreground"
-                              : "border-border bg-card text-card-foreground hover:border-brand/50",
-                          )}
-                        >
-                          <span>{service.label}</span>
-                          <span
-                            className={cn(
-                              "flex size-4 shrink-0 items-center justify-center rounded-sm border transition-colors",
-                              active ? "border-brand bg-brand text-brand-foreground" : "border-input",
-                            )}
-                          >
-                            {active && <CheckCircle2 className="size-3" />}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {stepName === "Project details" && (
-                <div className="space-y-6">
-                  <OptionGroup
-                    label="Property type"
-                    options={propertyTypes.map((p) => ({ id: p.id, label: p.label }))}
-                    value={form.propertyType}
-                    onChange={(v) => update("propertyType", v as PropertyTypeId)}
-                  />
-                  <OptionGroup
-                    label="Project size"
-                    options={projectSizes.map((s) => ({ id: s.id, label: s.label }))}
-                    value={form.size}
-                    onChange={(v) => update("size", v as ProjectSizeId)}
-                    columns
-                  />
-                  <OptionGroup
-                    label="Repair complexity"
-                    options={complexities.map((c) => ({ id: c.id, label: c.label }))}
-                    value={form.complexity}
-                    onChange={(v) => update("complexity", v as ComplexityId)}
-                    columns
-                  />
-                  <OptionGroup
-                    label="Urgency"
-                    options={urgencies.map((u) => ({ id: u.id, label: u.label, note: u.note }))}
-                    value={form.urgency}
-                    onChange={(v) => update("urgency", v as UrgencyId)}
-                  />
-                  {estimate && <EstimatePanel estimate={estimate} />}
-                </div>
-              )}
-
-              {stepName === "Schedule" && (
-                <div className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="booking-date">Preferred date</Label>
-                    <Input
-                      id="booking-date"
-                      type="date"
-                      min={today()}
-                      value={form.date}
-                      onChange={(event) => update("date", event.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Available time slots</Label>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {timeSlots.map((slot) => (
-                        <button
-                          key={slot}
-                          type="button"
-                          onClick={() => update("timeSlot", slot)}
-                          className={cn(
-                            "rounded-md border px-3.5 py-2.5 text-sm transition-colors",
-                            form.timeSlot === slot
-                              ? "border-brand bg-brand/10 text-foreground"
-                              : "border-border bg-card text-card-foreground hover:border-brand/50",
-                          )}
-                        >
-                          {slot}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {isEmergency && (
-                    <p className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-xs text-foreground">
-                      <AlertTriangle className="mt-0.5 size-4 shrink-0 text-destructive" />
-                      For active leaks, storm damage or safety hazards, call{" "}
-                      <a href={business.phoneHref} className="font-semibold underline">
-                        {business.phone}
-                      </a>{" "}
-                      right away — we'll respond faster by phone.
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {stepName === "Photos & address" && (
-                <div className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="booking-address">Property address</Label>
-                    <Input
-                      id="booking-address"
-                      placeholder="123 Pine St, Longview, TX 75604"
-                      value={form.address}
-                      onChange={(event) => update("address", event.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Project photos (optional)</Label>
-                    <PhotoUpload
-                      photos={form.photos}
-                      onChange={(photos) => update("photos", photos)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="booking-notes">Project notes</Label>
-                    <Textarea
-                      id="booking-notes"
-                      rows={4}
-                      placeholder="Anything we should know — access, materials, timing, problem history."
-                      value={form.notes}
-                      onChange={(event) => update("notes", event.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {stepName === "Your details" && (
-                <div className="space-y-5">
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="booking-name">Full name</Label>
-                      <Input
-                        id="booking-name"
-                        value={form.name}
-                        onChange={(event) => update("name", event.target.value)}
-                        placeholder="Jane Doe"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="booking-phone">Phone</Label>
-                      <Input
-                        id="booking-phone"
-                        type="tel"
-                        value={form.phone}
-                        onChange={(event) => update("phone", event.target.value)}
-                        placeholder="(903) 555-0134"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="booking-email">Email</Label>
-                    <Input
-                      id="booking-email"
-                      type="email"
-                      value={form.email}
-                      onChange={(event) => update("email", event.target.value)}
-                      placeholder="you@email.com"
-                    />
-                  </div>
-                  <OptionGroup
-                    label="Preferred contact method"
-                    options={[
-                      { id: "Phone call", label: "Phone call" },
-                      { id: "Text message", label: "Text message" },
-                      { id: "Email", label: "Email" },
-                    ]}
-                    value={form.preferredContact}
-                    onChange={(v) => update("preferredContact", v as FormState["preferredContact"])}
-                  />
-                </div>
-              )}
-
-              {stepName === "Review" && (
-                <div className="space-y-5">
-                  {estimate && <EstimatePanel estimate={estimate} />}
-                  <dl className="divide-y divide-border rounded-lg border border-border bg-card">
-                    <SummaryRow label="Services" value={form.services.map(serviceLabel).join(", ")} />
-                    <SummaryRow
-                      label="Property"
-                      value={`${propertyTypes.find((p) => p.id === form.propertyType)!.label} · ${
-                        projectSizes.find((s) => s.id === form.size)!.label
-                      }`}
-                    />
-                    <SummaryRow
-                      label="Urgency"
-                      value={urgencies.find((u) => u.id === form.urgency)!.label}
-                    />
-                    {needsSchedule && (
-                      <SummaryRow label="Date & time" value={`${form.date} · ${form.timeSlot}`} />
-                    )}
-                    <SummaryRow label="Address" value={form.address} />
-                    <SummaryRow
-                      label="Contact"
-                      value={`${form.name} · ${form.phone} · ${form.email} · prefers ${form.preferredContact.toLowerCase()}`}
-                    />
-                    {form.notes && <SummaryRow label="Notes" value={form.notes} />}
-                  </dl>
-
-                  {form.photos.length > 0 && (
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                        Photos ({form.photos.length})
-                      </p>
-                      <ul className="mt-2 grid grid-cols-4 gap-2">
-                        {form.photos.map((photo) => (
-                          <li key={photo.id} className="overflow-hidden rounded-md border border-border">
-                            <img src={photo.url} alt={photo.name} className="h-16 w-full object-cover" />
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {error && (
-                <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                  {error}
-                </p>
-              )}
-
-              <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <Button
-                  variant="ghost"
-                  onClick={back}
-                  disabled={step === 0 || submitting}
-                  className="sm:w-auto"
-                >
+            <div className="border-t border-slate-200/80 bg-[#f5f5f7]/90 px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 backdrop-blur-xl">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <Button variant="ghost" onClick={back} disabled={step === 0 || submitting} className="h-12 sm:w-auto">
                   <ArrowLeft className="size-4" /> Back
                 </Button>
                 <div className="flex flex-col gap-2 sm:flex-row">
-                  <Button variant="outline" size="lg" asChild>
+                  <Button variant="outline" size="lg" asChild className="h-12">
                     <a href={business.phoneHref}>
                       <Phone className="size-4" /> Call Now
                     </a>
                   </Button>
                   {step < steps.length - 1 ? (
-                    <Button variant="brand" size="lg" onClick={next}>
+                    <Button variant="brand" size="lg" onClick={next} className="h-12">
                       Continue <ArrowRight className="size-4" />
                     </Button>
                   ) : (
-                    <Button variant="brand" size="lg" onClick={submit} disabled={submitting}>
+                    <Button variant="brand" size="lg" onClick={submit} disabled={submitting} className="h-12">
                       {submitting ? (
                         <>
                           <Loader2 className="size-4 animate-spin" /> Sending…

@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Hero } from "@/components/site/Hero";
@@ -10,20 +11,37 @@ import { BookingProvider } from "@/components/site/booking/BookingProvider";
 import { CostCalculator } from "@/components/site/CostCalculator";
 import { EmergencyBanner } from "@/components/site/EmergencyBanner";
 import { GoogleReviews } from "@/components/site/trust/GoogleReviews";
-import { VideoTestimonials } from "@/components/site/trust/VideoTestimonials";
-import { CustomerStories } from "@/components/site/trust/CustomerStories";
-import { BrandsUsed } from "@/components/site/trust/BrandsUsed";
-import {
-  GuaranteeWarranty,
-  TrustBadges,
-  TrustTestimonials,
-} from "@/components/site/trust/TrustSignals";
 import {
   WhyChooseUs,
   HowItWorks,
   FeaturedServicesShowcase,
 } from "@/components/site/content/ContentSections";
 import { supabase } from "@/integrations/supabase/client";
+
+const TrustBadges = lazy(async () => {
+  const module = await import("@/components/site/trust/TrustSignals");
+  return { default: module.TrustBadges };
+});
+const TrustTestimonials = lazy(async () => {
+  const module = await import("@/components/site/trust/TrustSignals");
+  return { default: module.TrustTestimonials };
+});
+const VideoTestimonials = lazy(async () => {
+  const module = await import("@/components/site/trust/VideoTestimonials");
+  return { default: module.VideoTestimonials };
+});
+const CustomerStories = lazy(async () => {
+  const module = await import("@/components/site/trust/CustomerStories");
+  return { default: module.CustomerStories };
+});
+const GuaranteeWarranty = lazy(async () => {
+  const module = await import("@/components/site/trust/TrustSignals");
+  return { default: module.GuaranteeWarranty };
+});
+const BrandsUsed = lazy(async () => {
+  const module = await import("@/components/site/trust/BrandsUsed");
+  return { default: module.BrandsUsed };
+});
 
 interface LoaderData {
   settings: Record<string, any>;
@@ -136,14 +154,18 @@ function Index() {
           <About />
           <CraftsmanshipBand />
           <Work />
-          <TrustBadges />
+          <Suspense fallback={<div className="py-12" /> }>
+            <TrustBadges />
+          </Suspense>
           <Testimonials />
           <GoogleReviews />
-          <TrustTestimonials />
-          <VideoTestimonials />
-          <CustomerStories />
-          <GuaranteeWarranty />
-          <BrandsUsed />
+          <Suspense fallback={<div className="py-12" /> }>
+            <TrustTestimonials />
+            <VideoTestimonials />
+            <CustomerStories />
+            <GuaranteeWarranty />
+            <BrandsUsed />
+          </Suspense>
           <ServiceArea />
           <Estimate />
         </main>
