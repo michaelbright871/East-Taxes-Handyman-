@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Download, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PricingBrochureButton } from "../PricingBrochure";
 import { useBooking } from "../booking/BookingProvider";
 import { business } from "../business";
 import { brochure, howItWorks, whyChooseUs } from "@/content/company";
@@ -215,11 +216,7 @@ export function BrochureCTA() {
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{brochure.copy}</p>
           <p className="mt-2 text-xs uppercase tracking-wider text-muted-foreground">{brochure.note}</p>
         </div>
-        <Button variant="brand" size="xl" asChild>
-          <a href="/brochure.pdf" download="East-Texas-Handyman-Services-Brochure.pdf">
-            <Download className="size-4" /> Download Brochure
-          </a>
-        </Button>
+        <PricingBrochureButton />
       </div>
     </section>
   );
