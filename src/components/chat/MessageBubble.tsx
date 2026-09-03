@@ -171,7 +171,7 @@ function AssistantActions({ content }: { content: string }) {
               <button
                 type="button"
                 onClick={() => setFeedbackOpen(false)}
-                className="absolute right-8 top-8 flex size-10 items-center justify-center rounded-full bg-white/5 text-muted-foreground transition-all hover:bg-white/10 hover:text-foreground active:scale-90"
+                className="absolute right-8 top-8 flex size-10 items-center justify-center rounded-full overlay text-muted-foreground transition-all hover:overlay-strong hover:text-foreground active:scale-90"
               >
                 <X className="size-5" />
               </button>
@@ -206,14 +206,14 @@ function AssistantActions({ content }: { content: string }) {
                       value={feedback}
                       onChange={(e) => setFeedback(e.target.value)}
                       placeholder="Tell us what happened..."
-                      className="w-full resize-none rounded-[24px] border border-white/10 bg-white/5 px-6 py-5 text-lg leading-relaxed outline-none transition-all focus:border-brand/50 focus:bg-white/10 focus:ring-8 focus:ring-brand/5"
+                      className="w-full resize-none rounded-[24px] border border-border bg-card px-6 py-5 text-lg leading-relaxed outline-none transition-all focus:border-brand/50 focus:bg-card/90 focus:ring-8 focus:ring-brand/5"
                     />
                   </div>
                   <div className="flex gap-4">
                     <button
                       type="button"
                       onClick={() => setFeedbackOpen(false)}
-                      className="flex-1 rounded-[20px] border border-white/10 py-5 text-lg font-bold transition-all hover:bg-white/5 active:scale-[0.98]"
+                      className="flex-1 rounded-[20px] border border-border py-5 text-lg font-bold transition-all hover:bg-card active:scale-[0.98]"
                     >
                       Cancel
                     </button>
@@ -380,9 +380,9 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
                     className="size-full object-cover"
                   />
                   {!isMine && (
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                      <p className="truncate text-xs font-medium text-white">{att.name}</p>
-                    </div>
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3">
+                              <p className="truncate text-xs font-medium text-foreground">{att.name}</p>
+                            </div>
                   )}
                 </div>
               );
