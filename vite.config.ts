@@ -12,4 +12,12 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Ensure server-only heavy libs like pdf-lib are treated as external and not bundled
+  vite: {
+    build: {
+      rolldownOptions: {
+        external: ["pdf-lib"],
+      },
+    },
+  },
 });
