@@ -55,7 +55,7 @@ function ServicesPage() {
                   key={service.slug}
                   to="/services/$slug"
                   params={{ slug: service.slug }}
-                  className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
                 >
                   <SmartImage
                     src={service.image}
@@ -64,16 +64,35 @@ function ServicesPage() {
                     className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="flex flex-1 flex-col p-6">
-                    <span className="flex size-10 items-center justify-center rounded-md bg-secondary text-primary transition-colors duration-300 group-hover:bg-brand group-hover:text-brand-foreground">
-                      <Icon className="size-5" />
-                    </span>
-                    <h2 className="mt-4 text-lg text-card-foreground">{service.title}</h2>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="flex size-11 items-center justify-center rounded-lg bg-secondary text-primary transition-colors duration-300 group-hover:bg-brand group-hover:text-brand-foreground">
+                        <Icon className="size-5" />
+                      </span>
+                      <span className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-brand">
+                        Go to <ArrowRight className="size-3" />
+                      </span>
+                    </div>
+
+                    <h2 className="mt-4 text-lg font-medium text-card-foreground">{service.title}</h2>
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                       {service.short}
                     </p>
-                    <div className="mt-5 flex items-center justify-between border-t border-border pt-4 text-xs uppercase tracking-wider">
-                      <span className="text-muted-foreground">{service.duration}</span>
-                      <span className="font-display text-brand">From {service.pricing.startingFrom}</span>
+
+                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                          Duration
+                        </span>
+                        <span className="mt-1 text-xs text-foreground">{service.duration}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                          Starting at
+                        </span>
+                        <span className="mt-1 font-display text-base text-brand">
+                          {service.pricing.startingFrom}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </Link>
