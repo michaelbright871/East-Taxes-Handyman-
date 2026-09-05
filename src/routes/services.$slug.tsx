@@ -202,22 +202,48 @@ function ServiceDetail() {
               </Button>
             </div>
 
-            <div className="rounded-lg border border-border bg-secondary/50 p-6">
-              <h3 className="font-display text-lg uppercase tracking-wide text-foreground">Related Services</h3>
-              <ul className="mt-4 space-y-3">
-                {related.map((r) => (
-                  <li key={r.slug}>
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="font-display text-lg uppercase tracking-wide text-foreground">Related Services</h3>
+                <span className="rounded-full border border-border bg-secondary/50 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  {related.length} options
+                </span>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {related.map((r) => {
+                  const Icon = r.icon;
+                  return (
                     <Link
+                      key={r.slug}
                       to="/services/$slug"
                       params={{ slug: r.slug }}
-                      className="flex items-center justify-between gap-2 text-sm text-muted-foreground transition-colors hover:text-brand"
+                      className="group block rounded-xl border border-border bg-background/80 p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/30 hover:bg-card"
                     >
-                      {r.title}
-                      <ArrowRight className="size-3" />
+                      <div className="flex items-start gap-3">
+                        <span className="mt-0.5 flex size-9 items-center justify-center rounded-md bg-secondary text-primary ring-1 ring-inset ring-border group-hover:bg-brand group-hover:text-brand-foreground group-hover:ring-brand/30">
+                          <Icon className="size-4" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="font-medium text-foreground">{r.title}</p>
+                            <ArrowRight className="size-3.5 text-muted-foreground transition-transform duration-200 group-hover:translate-x-1 group-hover:text-brand" />
+                          </div>
+                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{r.short}</p>
+                          <div className="mt-2 flex items-center justify-between gap-3 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                            <span>Starts {r.pricing.startingFrom}</span>
+                            <span className="text-brand">View</span>
+                          </div>
+                        </div>
+                      </div>
                     </Link>
-                  </li>
-                ))}
-              </ul>
+                  );
+                })}
+              </div>
+
+              <Button variant="outline" size="lg" className="mt-5 w-full" asChild>
+                <Link to="/services">Browse all services</Link>
+              </Button>
             </div>
           </aside>
         </div>

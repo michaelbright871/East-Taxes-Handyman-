@@ -68,8 +68,8 @@ function ServicesPage() {
                       <span className="flex size-11 items-center justify-center rounded-lg bg-secondary text-primary transition-colors duration-300 group-hover:bg-brand group-hover:text-brand-foreground">
                         <Icon className="size-5" />
                       </span>
-                      <span className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-brand">
-                        Go to <ArrowRight className="size-3" />
+                      <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground transition-colors duration-300 dark:text-white">
+                        Visit <ArrowRight className="size-3.5" />
                       </span>
                     </div>
 
