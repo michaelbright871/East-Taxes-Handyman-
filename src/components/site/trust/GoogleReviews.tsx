@@ -32,7 +32,7 @@ export function GoogleReviews() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="w-full min-w-0 max-w-full rounded-lg border border-border bg-card p-7 glass-dark shadow-depth"
+              className="w-full min-w-0 max-w-full rounded-lg border border-slate-200 bg-white/95 p-7 shadow-[0_18px_45px_rgba(15,23,42,0.08)] dark:border-border dark:bg-card dark:glass-dark dark:shadow-depth"
             >
             <div className="flex items-center gap-3">
               <GoogleMark />
@@ -70,9 +70,9 @@ export function GoogleReviews() {
               ))}
             </dl>
 
-            <div className="mt-7 rounded-md bg-brand/10 p-4">
+            <div className="mt-7 rounded-md bg-orange-50 p-4 ring-1 ring-orange-200/80 dark:bg-brand/10 dark:ring-0">
               <p className="font-display text-3xl text-brand">{googleBusiness.satisfaction}%</p>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              <p className="text-xs uppercase tracking-widest text-slate-700 dark:text-muted-foreground">
                 Average customer satisfaction
               </p>
             </div>

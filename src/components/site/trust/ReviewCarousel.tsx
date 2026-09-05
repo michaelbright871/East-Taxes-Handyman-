@@ -41,7 +41,7 @@ export function ReviewCarousel({ reviews = googleReviews }: { reviews?: Customer
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div className="w-full max-w-full overflow-hidden rounded-lg border border-border bg-card glass-dark shadow-depth">
+      <div className="w-full max-w-full overflow-hidden rounded-lg border border-slate-200 bg-white/95 shadow-[0_18px_45px_rgba(15,23,42,0.08)] dark:border-border dark:bg-card dark:glass-dark dark:shadow-depth">
         <div className="flex w-full max-w-full">
           <AnimatePresence mode="wait">
             <motion.article 
@@ -58,18 +58,18 @@ export function ReviewCarousel({ reviews = googleReviews }: { reviews?: Customer
                 <GoogleMark className="size-6 opacity-80" />
               </div>
               <StarRating rating={currentReview.rating} className="mt-5" />
-              <blockquote className="mt-4 text-base leading-relaxed text-steel-foreground sm:text-lg">
+              <blockquote className="mt-4 text-base leading-relaxed text-slate-700 sm:text-lg dark:text-steel-foreground">
                 {currentReview.text}
               </blockquote>
-              <div className="mt-7 flex items-center gap-3 border-t border-border pt-5">
+              <div className="mt-7 flex items-center gap-3 border-t border-slate-200 pt-5 dark:border-border">
                 <Initials name={currentReview.name} />
                 <div>
-                  <p className="font-display text-base text-steel-foreground">{currentReview.name}</p>
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                  <p className="font-display text-base text-slate-900 dark:text-steel-foreground">{currentReview.name}</p>
+                  <p className="text-xs uppercase tracking-widest text-slate-600 dark:text-muted-foreground">
                     {currentReview.location} · {currentReview.service}
                   </p>
                 </div>
-                <span className="ml-auto hidden text-xs text-muted-foreground sm:block">{currentReview.date}</span>
+                <span className="ml-auto hidden text-xs text-slate-500 sm:block dark:text-muted-foreground">{currentReview.date}</span>
               </div>
             </motion.article>
           </AnimatePresence>

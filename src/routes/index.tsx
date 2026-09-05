@@ -1,4 +1,3 @@
-import { Suspense, lazy } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Hero } from "@/components/site/Hero";
@@ -9,22 +8,12 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { BookingProvider } from "@/components/site/booking/BookingProvider";
 import { CostCalculator } from "@/components/site/CostCalculator";
 import { EmergencyBanner } from "@/components/site/EmergencyBanner";
-import { GoogleReviews } from "@/components/site/trust/GoogleReviews";
 import {
   WhyChooseUs,
   HowItWorks,
   FeaturedServicesShowcase,
 } from "@/components/site/content/ContentSections";
 import { supabase } from "@/integrations/supabase/client";
-
-const TrustBadges = lazy(async () => {
-  const module = await import("@/components/site/trust/TrustSignals");
-  return { default: module.TrustBadges };
-});
-const GuaranteeWarranty = lazy(async () => {
-  const module = await import("@/components/site/trust/TrustSignals");
-  return { default: module.GuaranteeWarranty };
-});
 
 interface LoaderData {
   settings: Record<string, any>;
@@ -144,13 +133,6 @@ function Index() {
           <About />
           <CraftsmanshipBand />
           <Work />
-          <Suspense fallback={<div className="py-12" /> }>
-            <TrustBadges />
-          </Suspense>
-          <GoogleReviews />
-          <Suspense fallback={<div className="py-12" /> }>
-            <GuaranteeWarranty />
-          </Suspense>
           <ServiceArea />
           <Estimate />
         </main>

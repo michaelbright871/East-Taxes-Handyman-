@@ -45,13 +45,13 @@ function ProjectsPage() {
             {featuredProjects.map((project) => (
               <article
                 key={project.slug}
-                className="flex flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
               >
                 <SmartImage
                   src={project.image}
                   alt={`${project.title} in ${project.location}`}
                   wrapperClassName="aspect-[16/10] w-full"
-                  className="size-full object-cover"
+                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="flex flex-1 flex-col p-6">
                   <span className="font-display text-xs uppercase tracking-wider text-brand">

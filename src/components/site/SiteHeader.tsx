@@ -17,7 +17,7 @@ const links: { label: string; to: string; hash?: string }[] = [
   { label: "Our Work", to: "/projects" },
   { label: "About", to: "/about" },
   { label: "Pricing", to: "/services", hash: "pricing" },
-  { label: "Reviews", to: "/", hash: "reviews" },
+  { label: "Reviews", to: "/", hash: "google-reviews" },
   { label: "Contact", to: "/", hash: "estimate" },
 ];
 
