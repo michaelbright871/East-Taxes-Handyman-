@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { BookingProvider } from "@/components/site/booking/BookingProvider";
 import { CostCalculator } from "@/components/site/CostCalculator";
 import { EmergencyBanner } from "@/components/site/EmergencyBanner";
+import { GoogleReviews } from "@/components/site/trust/GoogleReviews";
 import {
   WhyChooseUs,
   HowItWorks,
@@ -133,6 +134,7 @@ function Index() {
           <About />
           <CraftsmanshipBand />
           <Work />
+          <GoogleReviews />
           <ServiceArea />
           <Estimate />
         </main>
