@@ -1,4 +1,4 @@
-import { paintingVideoUrl, carpentryVideoUrl, exteriorVideoUrl } from "@/content/media";
+// (removed video testimonials import — testimonials section deleted)
 
 /**
  * Central source of truth for all trust & credibility content.
@@ -93,48 +93,7 @@ export const googleReviews: CustomerReview[] = [
   },
 ];
 
-export interface VideoTestimonial {
-  id: string;
-  name: string;
-  location: string;
-  service: string;
-  summary: string;
-  videoSrc: string;
-  poster: string;
-}
-
-export const videoTestimonials: VideoTestimonial[] = [
-  {
-    id: "v1",
-    name: "The Rowland Family",
-    location: "Longview, TX",
-    service: "Interior Repairs & Painting",
-    summary:
-      "\"Two rooms of drywall and a full hallway repaint — finished in a day and priced exactly as quoted.\"",
-    videoSrc: paintingVideoUrl,
-    poster: "/videos/painting-poster.jpg",
-  },
-  {
-    id: "v2",
-    name: "Carrington Property Group",
-    location: "Kilgore, TX",
-    service: "Rental Turnovers",
-    summary:
-      "\"Our make-ready turnaround dropped from ten days to four. They're the only crew we call now.\"",
-    videoSrc: carpentryVideoUrl,
-    poster: "/videos/carpentry-poster.jpg",
-  },
-  {
-    id: "v3",
-    name: "Kelsey M.",
-    location: "Tyler, TX",
-    service: "Exterior Restoration",
-    summary:
-      "\"Gate rebuild plus pressure washing before listing photos. The curb appeal difference was immediate.\"",
-    videoSrc: exteriorVideoUrl,
-    poster: "/videos/exterior-poster.jpg",
-  },
-];
+// video testimonials removed per request
 
 export interface CustomerStory {
   id: string;
@@ -246,27 +205,7 @@ export const trustStats: TrustStat[] = [
   },
 ];
 
-export interface Brand {
-  name: string;
-  category: string;
-  supplier: string;
-  domain: string;
-}
-
-export const brands: Brand[] = [
-  { name: "DeWalt", category: "Power Tools", supplier: "Acme Tools", domain: "dewalt.com" },
-  { name: "Milwaukee", category: "Power Tools", supplier: "Home Depot Pro", domain: "milwaukeetool.com" },
-  { name: "Sherwin-Williams", category: "Paint & Coatings", supplier: "Longview Store", domain: "sherwin-williams.com" },
-  { name: "Behr", category: "Paint & Coatings", supplier: "Home Depot Pro", domain: "behr.com" },
-  { name: "Kohler", category: "Fixtures", supplier: "Ferguson", domain: "kohler.com" },
-  { name: "Moen", category: "Fixtures", supplier: "Ferguson", domain: "moen.com" },
-  { name: "Simpson Strong-Tie", category: "Structural Hardware", supplier: "McCoy's", domain: "strongtie.com" },
-  { name: "James Hardie", category: "Siding & Exterior", supplier: "McCoy's", domain: "jameshardie.com" },
-  { name: "Trex", category: "Decking", supplier: "McCoy's", domain: "trex.com" },
-  { name: "USG Sheetrock", category: "Drywall", supplier: "L&W Supply", domain: "usg.com" },
-  { name: "Schlage", category: "Door Hardware", supplier: "Ferguson", domain: "schlage.com" },
-  { name: "Titebond", category: "Adhesives", supplier: "Acme Tools", domain: "titebond.com" },
-];
+// brands list removed per request
 
 export const guarantees = [
   {
