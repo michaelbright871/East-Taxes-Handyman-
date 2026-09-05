@@ -99,29 +99,36 @@ export const Route = createFileRoute("/")({
     };
   },
   loader: async ({ context }) => {
-    const [settings, media] = await Promise.all([
-      context.queryClient.ensureQueryData({
-        queryKey: ["site-settings"],
-        queryFn: async () => {
-          const { data: remote } = await (supabase.from("site_settings" as any) as any).select("*");
-          return (remote || []).reduce((acc: any, item: any) => {
-            acc[item.key] = item.value;
-            return acc;
-          }, {});
-        }
-      }),
-      context.queryClient.ensureQueryData({
-        queryKey: ["media-assets"],
-        queryFn: async () => {
-          const { data: remote } = await (supabase.from("media_assets" as any) as any).select("*");
-          return (remote || []).reduce((acc: any, item: any) => {
-            acc[item.name] = item.url;
-            return acc;
-          }, {});
-        }
-      })
-    ]);
-    return { settings, media } as LoaderData;
+    try {
+      const [settings, media] = await Promise.all([
+        context.queryClient.ensureQueryData({
+          queryKey: ["site-settings"],
+          queryFn: async () => {
+            const { data: remote } = await (supabase.from("site_settings" as any) as any).select("*");
+            return (remote || []).reduce((acc: any, item: any) => {
+              acc[item.key] = item.value;
+              return acc;
+            }, {});
+          }
+        }),
+        context.queryClient.ensureQueryData({
+          queryKey: ["media-assets"],
+          queryFn: async () => {
+            const { data: remote } = await (supabase.from("media_assets" as any) as any).select("*");
+            return (remote || []).reduce((acc: any, item: any) => {
+              acc[item.name] = item.url;
+              return acc;
+            }, {});
+          }
+        })
+      ]);
+      return { settings, media } as LoaderData;
+    } catch (err) {
+      // If Supabase is not configured or a runtime error occurs, log and fall back
+      // to empty settings and media so the public site can still render.
+      console.error("Site loader failed to fetch remote settings/media:", err);
+      return { settings: {}, media: {} } as LoaderData;
+    }
   }
 });
 
