@@ -36,7 +36,6 @@ import { Route as AdminSecurityRouteImport } from './routes/admin.security'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSystemRouteImport } from './routes/admin.system'
-import { Route as ApiBrochureRouteImport } from './routes/api/brochure'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
@@ -176,11 +175,6 @@ const AdminSystemRoute = AdminSystemRouteImport.update({
   path: '/system',
   getParentRoute: () => AdminRoute,
 } as any)
-const ApiBrochureRoute = ApiBrochureRouteImport.update({
-  id: '/api/brochure',
-  path: '/api/brochure',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -224,7 +218,6 @@ export interface FileRoutesByFullPath {
   '/admin/services': typeof AdminServicesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/system': typeof AdminSystemRoute
-  '/api/brochure': typeof ApiBrochureRoute
   '/api/chat': typeof ApiChatRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -256,7 +249,6 @@ export interface FileRoutesByTo {
   '/admin/services': typeof AdminServicesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/system': typeof AdminSystemRoute
-  '/api/brochure': typeof ApiBrochureRoute
   '/api/chat': typeof ApiChatRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -290,7 +282,6 @@ export interface FileRoutesById {
   '/admin/services': typeof AdminServicesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/system': typeof AdminSystemRoute
-  '/api/brochure': typeof ApiBrochureRoute
   '/api/chat': typeof ApiChatRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -325,7 +316,6 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/settings'
     | '/admin/system'
-    | '/api/brochure'
     | '/api/chat'
     | '/services/$slug'
     | '/admin/'
@@ -357,7 +347,6 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/settings'
     | '/admin/system'
-    | '/api/brochure'
     | '/api/chat'
     | '/services/$slug'
     | '/admin'
@@ -390,7 +379,6 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/settings'
     | '/admin/system'
-    | '/api/brochure'
     | '/api/chat'
     | '/services/$slug'
     | '/admin/'
@@ -404,7 +392,6 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ProjectsRoute: typeof ProjectsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ApiBrochureRoute: typeof ApiBrochureRoute
   ApiChatRoute: typeof ApiChatRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
@@ -601,13 +588,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSystemRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/api/brochure': {
-      id: '/api/brochure'
-      path: '/api/brochure'
-      fullPath: '/api/brochure'
-      preLoaderRoute: typeof ApiBrochureRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -689,7 +669,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ProjectsRoute: ProjectsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ApiBrochureRoute: ApiBrochureRoute,
   ApiChatRoute: ApiChatRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   ServicesIndexRoute: ServicesIndexRoute,

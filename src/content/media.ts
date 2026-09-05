@@ -11,6 +11,7 @@ const LOCAL_MEDIA = {
   carpentry: "/videos/carpentry.mp4",
   painting: "/videos/painting.mp4",
   exterior: "/videos/exterior.mp4",
+  testimonials: "/videos/testimonials.mp4",
   contact: "/videos/contact.mp4",
 } as const;
 
@@ -34,4 +35,5 @@ export const craftsmanshipVideoUrl = LOCAL_MEDIA.craftsmanship;
 export const carpentryVideoUrl = LOCAL_MEDIA.carpentry;
 export const paintingVideoUrl = LOCAL_MEDIA.painting;
 export const exteriorVideoUrl = LOCAL_MEDIA.exterior;
+export const testimonialsVideoUrl = LOCAL_MEDIA.testimonials;
 export const contactVideoUrl = LOCAL_MEDIA.contact;

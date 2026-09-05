@@ -9,6 +9,7 @@ const FALLBACK_MEDIA: Record<string, string> = {
   "carpentry-video": "/videos/carpentry.mp4",
   "painting-video": "/videos/painting.mp4",
   "exterior-video": "/videos/exterior.mp4",
+  "testimonials-video": "/videos/testimonials.mp4",
   "contact-video": "/videos/contact.mp4",
 };
 

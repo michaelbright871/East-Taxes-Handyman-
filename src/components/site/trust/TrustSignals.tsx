@@ -175,4 +175,109 @@ export function GuaranteeWarranty() {
   );
 }
 
-// Testimonial wall removed per request
+/** Testimonial cards emphasising reliability, pricing, quality and timeliness. */
+const pillarTestimonials = [
+  {
+    pillar: "Reliability",
+    icon: Clock3,
+    quote:
+      "They gave me a two-hour arrival window and were knocking on the door within the first fifteen minutes. Every visit since has been the same.",
+    name: "Regina H.",
+    role: "Homeowner · Longview",
+  },
+  {
+    pillar: "Honest Pricing",
+    icon: BadgeCheck,
+    quote:
+      "The written estimate was the final invoice, to the dollar. They even flagged a repair I did not need and took it off the quote.",
+    name: "Brian T.",
+    role: "Landlord · Marshall",
+  },
+  {
+    pillar: "Quality Workmanship",
+    icon: Sparkles,
+    quote:
+      "The trim and texture match is flawless — you genuinely cannot see where the old wall stopped and the new one began.",
+    name: "Nicole A.",
+    role: "Homeowner · Gladewater",
+  },
+  {
+    pillar: "Professionalism",
+    icon: UserCheck,
+    quote:
+      "Uniformed, badged, respectful of the house and my time. As a single mother, having vetted technicians in my home matters a great deal.",
+    name: "Sharla D.",
+    role: "Homeowner · White Oak",
+  },
+  {
+    pillar: "Timely Completion",
+    icon: Clock3,
+    quote:
+      "Three-day job wrapped in two. They kept me posted every afternoon so I never had to chase anyone for an update.",
+    name: "Curtis L.",
+    role: "Small Business Owner · Henderson",
+  },
+  {
+    pillar: "Emergency Response",
+    icon: Siren,
+    quote:
+      "Called about a broken exterior door on a Saturday night. Secured before midnight, permanently repaired Monday morning.",
+    name: "Elaine P.",
+    role: "Property Manager · Tyler",
+  },
+];
+
+export function TrustTestimonials() {
+  return (
+    <section id="testimonial-wall" className="bg-background py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <p className="eyebrow">Customer Testimonials</p>
+            <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl">
+              What Consistent Service Looks Like
+            </h2>
+          </div>
+          <span className="inline-flex items-center gap-2 rounded-full border border-destructive/30 bg-destructive/10 px-4 py-1.5 text-sm text-destructive">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive/60" />
+              <span className="relative inline-flex size-2 rounded-full bg-destructive" />
+            </span>
+            24/7 emergency service available
+          </span>
+        </div>
+
+        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {pillarTestimonials.map((item) => (
+            <figure
+              key={item.name}
+              className="flex h-full flex-col rounded-lg border border-border bg-card p-7 transition-colors duration-300 hover:border-brand/50"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-10 items-center justify-center rounded-md bg-brand/15 text-brand">
+                  <item.icon className="size-5" />
+                </span>
+                <Quote className="size-6 text-brand/40" />
+              </div>
+              <p className="mt-5 font-display text-sm uppercase tracking-widest text-brand">
+                {item.pillar}
+              </p>
+              <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+                {item.quote}
+              </blockquote>
+              <figcaption className="mt-6 border-t border-border pt-4">
+                <p className="font-display text-base text-foreground">{item.name}</p>
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">{item.role}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <p className="mt-8 text-xs text-muted-foreground">
+          Licensed &amp; insured · Background-checked technicians · Locally owned in {business.city},{" "}
+          {business.stateCode}
+        </p>
+      </div>
+    </section>
+  );
+}

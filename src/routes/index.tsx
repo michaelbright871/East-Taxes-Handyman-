@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { Hero } from "@/components/site/Hero";
 import { Services } from "@/components/site/Services";
 import { About, CraftsmanshipBand, Work } from "@/components/site/Sections";
+import { Testimonials } from "@/components/site/Testimonials";
 import { Estimate, ServiceArea } from "@/components/site/Contact";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { BookingProvider } from "@/components/site/booking/BookingProvider";
@@ -21,6 +22,14 @@ const TrustBadges = lazy(async () => {
   const module = await import("@/components/site/trust/TrustSignals");
   return { default: module.TrustBadges };
 });
+const TrustTestimonials = lazy(async () => {
+  const module = await import("@/components/site/trust/TrustSignals");
+  return { default: module.TrustTestimonials };
+});
+const VideoTestimonials = lazy(async () => {
+  const module = await import("@/components/site/trust/VideoTestimonials");
+  return { default: module.VideoTestimonials };
+});
 const CustomerStories = lazy(async () => {
   const module = await import("@/components/site/trust/CustomerStories");
   return { default: module.CustomerStories };
@@ -28,6 +37,10 @@ const CustomerStories = lazy(async () => {
 const GuaranteeWarranty = lazy(async () => {
   const module = await import("@/components/site/trust/TrustSignals");
   return { default: module.GuaranteeWarranty };
+});
+const BrandsUsed = lazy(async () => {
+  const module = await import("@/components/site/trust/BrandsUsed");
+  return { default: module.BrandsUsed };
 });
 
 interface LoaderData {
@@ -151,10 +164,14 @@ function Index() {
           <Suspense fallback={<div className="py-12" /> }>
             <TrustBadges />
           </Suspense>
+          <Testimonials />
           <GoogleReviews />
           <Suspense fallback={<div className="py-12" /> }>
+            <TrustTestimonials />
+            <VideoTestimonials />
             <CustomerStories />
             <GuaranteeWarranty />
+            <BrandsUsed />
           </Suspense>
           <ServiceArea />
           <Estimate />
