@@ -21,10 +21,6 @@ const TrustBadges = lazy(async () => {
   const module = await import("@/components/site/trust/TrustSignals");
   return { default: module.TrustBadges };
 });
-const TrustTestimonials = lazy(async () => {
-  const module = await import("@/components/site/trust/TrustSignals");
-  return { default: module.TrustTestimonials };
-});
 const GuaranteeWarranty = lazy(async () => {
   const module = await import("@/components/site/trust/TrustSignals");
   return { default: module.GuaranteeWarranty };
@@ -153,7 +149,6 @@ function Index() {
           </Suspense>
           <GoogleReviews />
           <Suspense fallback={<div className="py-12" /> }>
-            <TrustTestimonials />
             <GuaranteeWarranty />
           </Suspense>
           <ServiceArea />
