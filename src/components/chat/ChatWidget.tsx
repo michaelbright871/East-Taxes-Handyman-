@@ -58,7 +58,12 @@ export function ChatWidget() {
         role="dialog"
         aria-label="Customer support chat"
       >
-        <header className="relative z-20 flex items-center justify-between px-3 py-2.5">
+        <header
+          className={cn(
+            "relative z-20 flex items-center justify-between px-3 py-2.5",
+            drawerOpen && "invisible pointer-events-none",
+          )}
+        >
           <button
             type="button"
             aria-label="Open chat menu"

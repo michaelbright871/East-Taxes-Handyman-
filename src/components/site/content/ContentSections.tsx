@@ -112,7 +112,8 @@ export function FeaturedServicesShowcase() {
               key={service.slug}
               to="/services/$slug"
               params={{ slug: service.slug }}
-              className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
+              aria-label={`View ${service.title} service`}
+              className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg cursor-pointer"
             >
               <SmartImage
                 src={service.image}

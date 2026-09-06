@@ -110,9 +110,9 @@ function Row({
             type="button"
             aria-label="Close conversation menu"
             onClick={() => setMenu(false)}
-            className="fixed inset-0 z-30 cursor-default"
+            className="fixed inset-0 z-30 cursor-default bg-slate-900/5 backdrop-blur-[1px] transition-opacity dark:bg-foreground/20"
           />
-          <div className="absolute right-2 top-9 z-40 w-[220px] overflow-hidden rounded-[24px] border border-border bg-popover py-2 shadow-2xl">
+          <div className="absolute right-2 top-9 z-40 w-[220px] overflow-hidden rounded-[24px] border border-border bg-popover/95 py-2 shadow-2xl backdrop-blur-sm">
             <button
               type="button"
               onClick={() => {
@@ -199,7 +199,7 @@ export function ChatDrawer({
       <div
         onClick={onClose}
         className={cn(
-          "absolute inset-0 z-30 bg-foreground/25 transition-opacity duration-300",
+          "absolute inset-0 z-30 bg-slate-900/10 backdrop-blur-[2px] transition-opacity duration-300 dark:bg-foreground/25",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
