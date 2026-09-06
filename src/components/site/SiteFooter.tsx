@@ -50,7 +50,7 @@ export function SiteFooter() {
               href={business.mapsDirections}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 text-surface-foreground underline decoration-2 underline-offset-4 transition-colors hover:text-brand"
+              className="flex items-center gap-2 text-brand underline decoration-1 decoration-brand underline-offset-3 transition-colors hover:text-brand/90"
             >
               <Navigation className="size-4 text-brand" /> Get directions on Google Maps
             </a>

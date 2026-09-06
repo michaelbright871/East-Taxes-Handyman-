@@ -127,18 +127,18 @@ function ServiceDetail() {
               ))}
             </ul>
 
-            <h2 className="mt-12 text-2xl text-foreground sm:text-3xl">Our Process</h2>
-            <ol className="mt-6 space-y-4">
-              {service.process.map((p, i) => (
-                <li key={p.step} className="flex gap-4 rounded-lg border border-border bg-card p-5">
-                  <span className="font-display text-2xl text-brand/40">{String(i + 1).padStart(2, "0")}</span>
-                  <div>
-                    <h3 className="text-base text-card-foreground">{p.step}</h3>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{p.copy}</p>
+            <h3 className="font-display text-lg uppercase tracking-wide text-foreground">Our Process</h3>
+            <div className="mt-5 space-y-0">
+              {service.process.map((p, index) => (
+                <div key={p.step} className="group block py-3.5 text-left">
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="font-medium text-foreground">{p.step}</p>
                   </div>
-                </li>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{p.copy}</p>
+                  {index < 2 ? <div className="mt-3 border-t border-border/80" /> : null}
+                </div>
               ))}
-            </ol>
+            </div>
 
             {service.comparison ? (
               <>
@@ -223,7 +223,7 @@ function ServiceDetail() {
                 ))}
               </div>
 
-              <Button variant="link" size="lg" className="mt-5 w-full justify-start p-0 text-left text-sm font-medium text-foreground hover:no-underline" asChild>
+              <Button variant="link" size="lg" className="mt-5 w-full justify-start p-0 text-left text-sm font-medium text-brand hover:no-underline" asChild>
                 <Link to="/services">Browse all services</Link>
               </Button>
             </div>
