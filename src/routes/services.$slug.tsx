@@ -93,7 +93,7 @@ function ServiceDetail() {
               src={service.image}
               alt={`${service.title} by East Texas Handyman Services`}
               priority
-              wrapperClassName="aspect-[16/9] w-full rounded-lg border border-border"
+              wrapperClassName="aspect-[16/9] w-full rounded-2xl overflow-hidden border border-border"
               className="size-full object-cover"
             />
 

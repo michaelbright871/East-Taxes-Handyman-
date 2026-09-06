@@ -199,7 +199,7 @@ export function ChatDrawer({
       <div
         onClick={onClose}
         className={cn(
-          "absolute inset-0 z-30 bg-slate-900/10 backdrop-blur-[2px] transition-opacity duration-300 dark:bg-foreground/25",
+          "absolute inset-0 z-60 bg-slate-900/30 backdrop-blur-[2px] transition-opacity duration-300 dark:bg-black/60",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
@@ -230,12 +230,12 @@ export function ChatDrawer({
             className="ml-2 flex size-11 shrink-0 items-center justify-center rounded-full bg-muted transition-colors hover:bg-accent"
           >
             <Search className="size-5" />
-          </button>
-        </div>
-
-        <nav className="px-3 pt-4">
           <button
             type="button"
+            aria-label="Close conversation menu"
+            onClick={() => setMenu(false)}
+            className="fixed inset-0 z-70 cursor-default bg-slate-900/10 backdrop-blur-[1px] transition-opacity dark:bg-foreground/60"
+          />
             onClick={() => {
               onClose();
               void navigate({ to: "/", hash: "estimate" });
