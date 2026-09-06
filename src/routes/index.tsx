@@ -10,7 +10,6 @@ import { CostCalculator } from "@/components/site/CostCalculator";
 import { EmergencyBanner } from "@/components/site/EmergencyBanner";
 import { GoogleReviews } from "@/components/site/trust/GoogleReviews";
 import {
-  WhyChooseUs,
   HowItWorks,
   FeaturedServicesShowcase,
 } from "@/components/site/content/ContentSections";
@@ -128,7 +127,6 @@ function Index() {
           <EmergencyBanner />
           <Services />
           <FeaturedServicesShowcase />
-          <WhyChooseUs />
           <HowItWorks />
           <CostCalculator />
           <About />

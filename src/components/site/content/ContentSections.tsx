@@ -3,43 +3,11 @@ import { ArrowRight, Download, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBooking } from "../booking/BookingProvider";
 import { business } from "../business";
-import { brochure, howItWorks, whyChooseUs } from "@/content/company";
+import { brochure, howItWorks } from "@/content/company";
 import { featuredServices, services } from "@/content/services";
 import { SmartImage } from "../SmartImage";
 
-export function WhyChooseUs() {
-  return (
-    <section id="why-us" className="bg-secondary/40 py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="max-w-2xl">
-          <p className="eyebrow">Why Choose Us</p>
-          <h2 className="mt-4 text-3xl text-foreground sm:text-4xl lg:text-5xl">
-            The Reasons East Texas Keeps Calling Us Back
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-            Six things we hold ourselves to on every single job, whether it is a one-hour repair or a
-            full property turnover.
-          </p>
-        </div>
-
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {whyChooseUs.map(({ icon: Icon, title, copy }) => (
-            <article
-              key={title}
-              className="group rounded-lg border border-border bg-card p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
-            >
-              <span className="flex size-12 items-center justify-center rounded-md bg-secondary text-primary transition-colors duration-300 group-hover:bg-brand group-hover:text-brand-foreground">
-                <Icon className="size-5" />
-              </span>
-              <h3 className="mt-5 text-lg text-card-foreground">{title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+// `WhyChooseUs` removed per request — content and implementation deleted.
 
 export function HowItWorks() {
   const { open } = useBooking();

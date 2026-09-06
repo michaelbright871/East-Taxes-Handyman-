@@ -72,7 +72,7 @@ export function About() {
             wrapperClassName="rounded-lg shadow-xl aspect-6/5"
             className="h-full w-full object-cover"
           />
-          <div className="absolute -bottom-6 left-6 rounded-md bg-brand px-6 py-4 text-brand-foreground shadow-[0_10px_30px_rgba(var(--brand),0.3)] sm:left-auto sm:-right-6 glass border border-white/20">
+          <div className="absolute -bottom-6 left-6 rounded-md bg-brand px-6 py-4 text-brand-foreground dark:text-white shadow-[0_10px_30px_rgba(var(--brand),0.3)] sm:left-auto sm:-right-6 glass border border-white/20">
             <p className="font-display text-2xl">Locally Owned</p>
             <p className="text-sm">Longview &amp; East Texas</p>
           </div>

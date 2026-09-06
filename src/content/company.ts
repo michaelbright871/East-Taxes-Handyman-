@@ -35,38 +35,7 @@ export const companyIntro = {
   ],
 };
 
-export const whyChooseUs: { icon: LucideIcon; title: string; copy: string }[] = [
-  {
-    icon: BadgeCheck,
-    title: "15+ Years of Experience",
-    copy: "Hands-on repair, carpentry, and finish work across hundreds of East Texas homes and rental properties.",
-  },
-  {
-    icon: DollarSign,
-    title: "Transparent Pricing",
-    copy: "Free written estimates before any work starts. No surprise line items and no upsell pressure.",
-  },
-  {
-    icon: Clock,
-    title: "On-Time, On-Schedule",
-    copy: "We give you an arrival window and we keep it. If anything changes, you hear from us first.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Insured & Accountable",
-    copy: "General liability coverage on every job, and a one-year workmanship warranty behind the work.",
-  },
-  {
-    icon: MapPin,
-    title: "Locally Owned",
-    copy: "Based in Longview and serving our own neighbors — our reputation here is the whole business.",
-  },
-  {
-    icon: Sparkles,
-    title: "Clean, Careful Work",
-    copy: "Floors covered, dust controlled, and the job site left cleaner than we found it.",
-  },
-];
+// whyChooseUs removed per request
 
 export const howItWorks: { icon: LucideIcon; step: string; title: string; copy: string }[] = [
   {

@@ -4,10 +4,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHero } from "@/components/site/PageHero";
 import { craftsmanshipVideoUrl } from "@/content/media";
 import { SmartImage } from "@/components/site/SmartImage";
-import {
-  WhyChooseUs,
-  HowItWorks,
-} from "@/components/site/content/ContentSections";
+import { HowItWorks } from "@/components/site/content/ContentSections";
 import {
   certifications,
   companyIntro,
@@ -112,7 +109,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <WhyChooseUs />
+      {/* WhyChooseUs removed per request */}
 
       <section className="py-24 lg:py-28">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
