@@ -127,7 +127,7 @@ function ServiceDetail() {
               ))}
             </ul>
 
-            <h3 className="font-display text-lg uppercase tracking-wide text-foreground">Our Process</h3>
+            <h3 className="mt-8 font-display text-lg uppercase tracking-wide text-foreground">Our Process</h3>
             <div className="mt-5 space-y-0">
               {service.process.map((p, index) => (
                 <div key={p.step} className="group block py-3.5 text-left">
