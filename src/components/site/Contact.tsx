@@ -188,7 +188,7 @@ export function Estimate() {
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="rounded-lg border border-steel-foreground/15 bg-card/95 p-7 shadow-depth sm:p-9 glass border-white/10"
+          className="rounded-lg border border-slate-200 bg-white/95 p-7 shadow-depth ring-1 ring-slate-200 sm:p-9 dark:border-steel-foreground/15 dark:bg-card/95 dark:border-white/10 dark:ring-0"
         >
           {sentId ? (
             <div className="animate-fade-up space-y-5 text-center">

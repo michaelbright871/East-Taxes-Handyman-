@@ -98,7 +98,11 @@ export function ReviewCarousel({ reviews = googleReviews }: { reviews?: Customer
               type="button"
               aria-label={`Show review from ${review.name}`}
               aria-current={i === index}
-              onClick={() => go(i)}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                go(i);
+              }}
               className={cn(
                 "h-1.5 rounded-full transition-all duration-300",
                 i === index ? "w-8 bg-brand" : "w-3 bg-border hover:bg-brand/50",
@@ -107,10 +111,30 @@ export function ReviewCarousel({ reviews = googleReviews }: { reviews?: Customer
           ))}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" aria-label="Previous review" onClick={() => go(index - 1)}>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label="Previous review"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              go(index - 1);
+            }}
+          >
             <ChevronLeft className="size-4" />
           </Button>
-          <Button variant="outline" size="icon" aria-label="Next review" onClick={() => go(index + 1)}>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label="Next review"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              go(index + 1);
+            }}
+          >
             <ChevronRight className="size-4" />
           </Button>
         </div>
