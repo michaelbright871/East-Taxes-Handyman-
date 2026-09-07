@@ -53,23 +53,37 @@ export function ReviewCarousel({ reviews = googleReviews }: { reviews?: Customer
               className="w-full shrink-0 p-7 sm:p-10" 
               aria-hidden={undefined}
             >
-              <div className="flex items-start justify-between gap-4">
-                <Quote className="size-8 text-brand" />
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  {currentReview.avatar ? (
+                    <img
+                      src={currentReview.avatar}
+                      alt={currentReview.name}
+                      className="size-12 rounded-full border border-border object-cover shadow-sm"
+                    />
+                  ) : (
+                    <Initials name={currentReview.name} className="size-12 text-sm" />
+                  )}
+                  <div>
+                    <p className="font-display text-base text-slate-900 dark:text-steel-foreground">{currentReview.name}</p>
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-slate-600 dark:text-muted-foreground">
+                      {currentReview.location} · {currentReview.service}
+                    </p>
+                  </div>
+                </div>
                 <GoogleMark className="size-6 opacity-80" />
               </div>
+
               <StarRating rating={currentReview.rating} className="mt-5" />
+
               <blockquote className="mt-4 text-base leading-relaxed text-slate-700 sm:text-lg dark:text-steel-foreground">
                 {currentReview.text}
               </blockquote>
-              <div className="mt-7 flex items-center gap-3 border-t border-slate-200 pt-5 dark:border-border">
-                <Initials name={currentReview.name} />
-                <div>
-                  <p className="font-display text-base text-slate-900 dark:text-steel-foreground">{currentReview.name}</p>
-                  <p className="text-xs uppercase tracking-widest text-slate-600 dark:text-muted-foreground">
-                    {currentReview.location} · {currentReview.service}
-                  </p>
-                </div>
-                <span className="ml-auto hidden text-xs text-slate-500 sm:block dark:text-muted-foreground">{currentReview.date}</span>
+
+              <div className="mt-7 border-t border-slate-200 pt-5 dark:border-border">
+                <span className="block text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-muted-foreground">
+                  {currentReview.date}
+                </span>
               </div>
             </motion.article>
           </AnimatePresence>

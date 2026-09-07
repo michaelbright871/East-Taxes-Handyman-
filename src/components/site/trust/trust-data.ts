@@ -33,63 +33,123 @@ export interface CustomerReview {
   text: string;
   /** Optional avatar image URL — initials are used when omitted. */
   avatar?: string;
+  dateMonthsAgo: number;
   date: string;
 }
+
+const formatRelativeDate = (monthsAgo: number) => {
+  const years = Math.floor(monthsAgo / 12);
+  if (years > 0) {
+    return `${years} year${years === 1 ? "" : "s"} ago`;
+  }
+
+  return `${monthsAgo} month${monthsAgo === 1 ? "" : "s"} ago`;
+};
+
+const createAvatar = (name: string, from: string, to: string) => {
+  const initials = name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="${from}"/>
+          <stop offset="100%" stop-color="${to}"/>
+        </linearGradient>
+      </defs>
+      <rect width="128" height="128" rx="32" fill="url(#g)"/>
+      <circle cx="64" cy="52" r="20" fill="rgba(255,255,255,0.18)"/>
+      <path d="M31 98c7-15 19-22 33-22s26 7 33 22" fill="rgba(255,255,255,0.18)"/>
+      <text x="64" y="74" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700" fill="white">${initials}</text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+};
 
 export const googleReviews: CustomerReview[] = [
   {
     id: "r1",
-    name: "Amanda Rowland",
+    name: "Kevin Willis",
     location: "Longview, TX",
-    service: "Drywall Repair & Interior Painting",
+    service: "Full Home Renovation & Carpentry",
     rating: 5,
-    text: "They patched drywall in two rooms, rehung a sticking exterior door and painted our hallway in a single visit. Honest pricing quoted up front, no surprises, and they cleaned every speck of dust before leaving.",
-    date: "3 weeks ago",
+    text: "This team was simply amazing and incredibly talented. They went the extra mile in everything they did, and I could not be more happy with how they handled the entire project. They were true professionals at every stage. I am 120% happy with the results, and if you need anything done, these are the best people to complete your project. I would give them 16 stars out of 10. Truly amazing. Thank you so much for everything you did. I will tell everyone I know, and if you need anything done, this team is the best. Thank you for everything — well done!",
+    avatar: createAvatar("Kevin Willis", "#7c3aed", "#ec4899"),
+    dateMonthsAgo: 10,
+    date: formatRelativeDate(10),
   },
   {
     id: "r2",
-    name: "Dwight Carrington",
-    location: "Kilgore, TX",
-    service: "Rental Make-Ready",
+    name: "Donald Brown",
+    location: "Longview, TX",
+    service: "Exterior Repairs & Siding",
     rating: 5,
-    text: "I manage nine rentals and needed a make-ready fast. Flooring repair, fixture swaps and touch-up paint finished a day ahead of schedule. Reliable, professional and they text updates as they go.",
-    date: "1 month ago",
+    text: "I had about $7,000 of exterior work done to my home this April. From dry rot repair and replacement to extensive siding replacement and trim work, including replacing and painting, to two new wooden gates, all of the work was done excellently and professionally. Thank you again.\n\nWayne Brown",
+    avatar: createAvatar("Donald Brown", "#0f766e", "#14b8a6"),
+    dateMonthsAgo: 24,
+    date: formatRelativeDate(24),
   },
   {
     id: "r3",
-    name: "Kelsey Mabry",
-    location: "Tyler, TX",
-    service: "Fence Gate Rebuild & Pressure Washing",
+    name: "Viki Cain",
+    location: "Longview, TX",
+    service: "Bathroom Vent & Ceiling Repair",
     rating: 5,
-    text: "Rebuilt a sagging gate and pressure washed the driveway and patio before a listing shoot. On time, spotless workmanship, and the curb appeal difference genuinely helped sell the house.",
-    date: "1 month ago",
+    text: "A wonderful duo who do quality work in a timely manner. They replaced the ceiling and installed a new vent as well as a vent fan and light combo in my bathroom. The work is beautiful, and I must add that they are two really nice young people. Thank you both — you really helped this old lady out!",
+    avatar: createAvatar("Viki Cain", "#f59e0b", "#f97316"),
+    dateMonthsAgo: 36,
+    date: formatRelativeDate(36),
   },
   {
     id: "r4",
-    name: "Marcus Whitfield",
-    location: "Gladewater, TX",
-    service: "Deck Repair",
+    name: "Mercedes Kotchev",
+    location: "Longview, TX",
+    service: "Plumbing & Exterior Fixes",
     rating: 5,
-    text: "Replaced rotted deck boards and re-anchored the railing. Quote was fair and did not change, crew showed up exactly when they said, and the finish work matches the original deck perfectly.",
-    date: "2 months ago",
+    text: "GREAT handyman. We will be using his services for all of our needs from now on. He really went above and beyond, literally on the roof to fix our plumbing issues. He was professional and nice, and he even fixed a few things we did not even realize needed to be fixed. We will definitely use him in the future, and you should too. He will not disappoint!",
+    avatar: createAvatar("Mercedes Kotchev", "#2563eb", "#8b5cf6"),
+    dateMonthsAgo: 48,
+    date: formatRelativeDate(48),
   },
   {
     id: "r5",
-    name: "Terri Vaughn",
-    location: "Hallsville, TX",
-    service: "Emergency Storm Repair",
+    name: "Sabrina Siddique",
+    location: "Longview, TX",
+    service: "Residential & Business Handyman Work",
     rating: 5,
-    text: "Storm took out a section of siding and a door frame. They answered after hours and had us secured the same evening. That kind of responsiveness is rare — we've used them three times since.",
-    date: "2 months ago",
+    text: "Very professional. I would highly recommend him for both personal and business needs. I have called many handymen in the past, and I have never dealt with anyone this professional and talented. He won't leave the job until it is absolutely perfect.",
+    avatar: createAvatar("Sabrina Siddique", "#ef4444", "#f97316"),
+    dateMonthsAgo: 48,
+    date: formatRelativeDate(48),
   },
   {
     id: "r6",
-    name: "Jonathan Pike",
-    location: "White Oak, TX",
-    service: "Home Maintenance Plan",
-    rating: 4,
-    text: "Quality of work is excellent and the technicians are courteous and clearly vetted. Scheduling took an extra day during their busy season, but the results were worth the short wait.",
-    date: "3 months ago",
+    name: "Byron Owens",
+    location: "Longview, TX",
+    service: "Mailbox & Exterior Installation",
+    rating: 5,
+    text: "ETHS got us on their schedule quickly and had the job done before we knew it. Professional workers and professional work. We had them install a new post and mailbox for us, and we will definitely be utilizing their services again on our property. Great price and a great experience.",
+    avatar: createAvatar("Byron Owens", "#2563eb", "#0ea5e9"),
+    dateMonthsAgo: 11,
+    date: formatRelativeDate(11),
+  },
+  {
+    id: "r7",
+    name: "Carla Peoples",
+    location: "Longview, TX",
+    service: "Large Remodeling Project",
+    rating: 5,
+    text: "He is a very professional contractor. There is no limit to what he can do. There is no need to piece-meal a job when he can do everything himself. I had a huge remodeling project that lasted at least four to five weeks. I never had a worry knowing he was on the job. He even took time to entertain my three-year-old granddaughter, who constantly wanted to help him. I will definitely be using him again for any future projects I might have. I highly recommend him for any home project you might have.",
+    avatar: createAvatar("Carla Peoples", "#a855f7", "#ec4899"),
+    dateMonthsAgo: 48,
+    date: formatRelativeDate(48),
   },
 ];
 
