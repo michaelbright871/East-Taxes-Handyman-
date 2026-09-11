@@ -1,23 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback, type ReactNode } from "react";
 import {
   AlertTriangle,
-  ArrowLeft,
-  ArrowRight,
   CalendarDays,
+  Check,
   CheckCircle2,
+  ChevronLeft,
   Clock,
   Loader2,
   MapPin,
   Phone,
   Send,
   Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { business } from "../business";
 import { PhotoUpload, type UploadedPhoto } from "./PhotoUpload";
@@ -102,20 +99,32 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 export function BookingDialog({
   open,
+  isSheetVisible = true,
   mode,
   presetServiceId,
   onOpenChange,
+  onClose,
 }: {
   open: boolean;
+  isSheetVisible?: boolean;
   mode: BookingMode;
   presetServiceId?: string | undefined;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
 }) {
   const [form, setForm] = useState<FormState>(() => initialState(mode));
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
+
+  const handleClose = useCallback(() => {
+    if (onClose) {
+      onClose();
+    } else if (onOpenChange) {
+      onOpenChange(false);
+    }
+  }, [onClose, onOpenChange]);
 
   useEffect(() => {
     if (!open) return;
@@ -128,6 +137,16 @@ export function BookingDialog({
     setBookingId(null);
     setSubmitting(false);
   }, [open, mode, presetServiceId]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleClose]);
 
   const needsSchedule = mode !== "estimate";
   const steps = useMemo(
@@ -237,375 +256,565 @@ export function BookingDialog({
     });
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92svh] w-[calc(100vw-1.5rem)] max-w-2xl overflow-y-auto p-0">
-        <div
-          className={cn(
-            "border-b border-border px-6 py-5",
-            isEmergency ? "bg-destructive/10" : "bg-muted/40",
-          )}
-        >
-          <DialogTitle className="flex items-center gap-2 font-display text-xl uppercase tracking-wide text-foreground">
-            {isEmergency ? (
-              <AlertTriangle className="size-5 text-destructive" />
-            ) : (
-              <Sparkles className="size-5 text-brand" />
-            )}
-            {modeCopy[mode].title}
-          </DialogTitle>
-          <DialogDescription className="mt-1 text-sm text-muted-foreground">
-            {bookingId ? "Your request is confirmed." : modeCopy[mode].description}
-          </DialogDescription>
+  if (!open) return null;
 
-          {!bookingId && (
-            <div className="mt-4">
-              <div className="flex items-center gap-1.5">
-                {steps.map((label, index) => (
-                  <span
-                    key={label}
-                    className={cn(
-                      "h-1.5 flex-1 rounded-full transition-colors duration-300",
-                      index <= step ? "bg-brand" : "bg-border",
-                    )}
-                  />
-                ))}
-              </div>
-              <p className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">
-                Step {step + 1} of {steps.length} · {stepName}
-              </p>
-            </div>
-          )}
+  return (
+    <div className="fixed inset-0 z-50 flex justify-center">
+      {/* Subtle dark backdrop with soft blur */}
+      <div
+        onClick={handleClose}
+        aria-hidden="true"
+        className={cn(
+          "fixed inset-0 bg-black/45 backdrop-blur-[2px] transition-opacity duration-400 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          isSheetVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+      />
+
+      {/* iOS Modal Bottom Sheet */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ios-modal-title"
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-50 flex flex-col mx-auto",
+          "h-[90vh] max-h-[92vh] sm:h-[86vh] sm:max-w-2xl",
+          "rounded-t-[26px] sm:rounded-t-[30px]",
+          "bg-[#F2F2F7] dark:bg-[#121214] text-foreground",
+          "border-t border-x border-black/10 dark:border-white/10 shadow-[0_-15px_50px_rgba(0,0,0,0.4)]",
+          "transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform",
+          isSheetVisible ? "translate-y-0" : "translate-y-full"
+        )}
+      >
+        {/* iOS Grabber Pill */}
+        <div className="pt-2 pb-1 shrink-0">
+          <div className="w-10 h-1.5 bg-[#3C3C43]/30 dark:bg-[#EBEBF5]/30 rounded-full mx-auto" />
         </div>
 
-        <div className="px-6 py-6">
+        {/* iOS Navigation Header Bar */}
+        <div className="px-4 py-2.5 flex items-center justify-between border-b border-[#C6C6C8]/60 dark:border-[#38383A]/60 bg-[#F2F2F7]/95 dark:bg-[#121214]/95 backdrop-blur-md shrink-0">
+          {/* Left Action */}
+          <div className="w-20 text-left">
+            {bookingId ? (
+              <span />
+            ) : step > 0 ? (
+              <button
+                type="button"
+                onClick={back}
+                className="inline-flex items-center gap-0.5 text-[17px] font-normal text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity"
+              >
+                <ChevronLeft className="size-5 -ml-1.5 stroke-[2.5]" />
+                Back
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleClose}
+                className="text-[17px] font-normal text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+
+          {/* Center Title */}
+          <div className="flex-1 text-center px-2 min-w-0">
+            <h2
+              id="ios-modal-title"
+              className="text-[17px] font-semibold text-[#000000] dark:text-[#FFFFFF] tracking-tight truncate"
+            >
+              {bookingId ? "Confirmed" : stepName}
+            </h2>
+          </div>
+
+          {/* Right Action */}
+          <div className="w-20 text-right">
+            {bookingId ? (
+              <button
+                type="button"
+                onClick={handleClose}
+                className="text-[17px] font-semibold text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity"
+              >
+                Done
+              </button>
+            ) : step < steps.length - 1 ? (
+              <button
+                type="button"
+                onClick={next}
+                className="text-[17px] font-semibold text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity"
+              >
+                Next
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={submit}
+                disabled={submitting}
+                className="inline-flex items-center justify-end text-[17px] font-semibold text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity disabled:opacity-40"
+              >
+                {submitting ? <Loader2 className="size-4 animate-spin" /> : "Done"}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Hairline Step Progress Bar */}
+        {!bookingId && (
+          <div className="h-[2px] w-full bg-[#E5E5EA] dark:bg-[#2C2C2E] overflow-hidden shrink-0">
+            <div
+              className="h-full bg-[#007AFF] dark:bg-[#0A84FF] transition-all duration-300 ease-out"
+              style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+        )}
+
+        {/* Scrollable iOS Content Body */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 overscroll-contain">
           {bookingId ? (
             <Confirmation
               bookingId={bookingId}
               form={form}
               mode={mode}
               estimateText={estimate ? `${currency(estimate.low)} – ${currency(estimate.high)}` : null}
-              onClose={() => onOpenChange(false)}
+              onClose={handleClose}
             />
           ) : (
-            <div key={stepName} className="animate-fade-up space-y-6">
+            <div key={stepName} className="space-y-4 animate-in fade-in-50 duration-200">
+              {/* STEP 1: Services */}
               {stepName === "Services" && (
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Select every service you need — we'll bundle them into one visit.
-                  </p>
-                  <div className="grid gap-2 sm:grid-cols-2">
+                <div>
+                  <IosSectionTitle subtitle="Select every service you need — we'll bundle them into one visit.">
+                    Services
+                  </IosSectionTitle>
+                  <IosGroupCard>
                     {serviceCatalog.map((service) => {
                       const active = form.services.includes(service.id);
                       return (
-                        <button
+                        <IosSelectRow
                           key={service.id}
-                          type="button"
+                          label={service.label}
+                          active={active}
                           onClick={() => toggleService(service.id)}
-                          className={cn(
-                            "flex items-center justify-between gap-3 rounded-md border px-3.5 py-3 text-left text-sm transition-colors",
-                            active
-                              ? "border-brand bg-brand/10 text-foreground"
-                              : "border-border bg-card text-card-foreground hover:border-brand/50",
-                          )}
-                        >
-                          <span>{service.label}</span>
-                          <span
-                            className={cn(
-                              "flex size-4 shrink-0 items-center justify-center rounded-sm border transition-colors",
-                              active ? "border-brand bg-brand text-brand-foreground" : "border-input",
-                            )}
-                          >
-                            {active && <CheckCircle2 className="size-3" />}
-                          </span>
-                        </button>
+                        />
                       );
                     })}
-                  </div>
+                  </IosGroupCard>
                 </div>
               )}
 
+              {/* STEP 2: Project Details */}
               {stepName === "Project details" && (
-                <div className="space-y-6">
-                  <OptionGroup
-                    label="Property type"
-                    options={propertyTypes.map((p) => ({ id: p.id, label: p.label }))}
-                    value={form.propertyType}
-                    onChange={(v) => update("propertyType", v as PropertyTypeId)}
-                  />
-                  <OptionGroup
-                    label="Project size"
-                    options={projectSizes.map((s) => ({ id: s.id, label: s.label }))}
-                    value={form.size}
-                    onChange={(v) => update("size", v as ProjectSizeId)}
-                    columns
-                  />
-                  <OptionGroup
-                    label="Repair complexity"
-                    options={complexities.map((c) => ({ id: c.id, label: c.label }))}
-                    value={form.complexity}
-                    onChange={(v) => update("complexity", v as ComplexityId)}
-                    columns
-                  />
-                  <OptionGroup
-                    label="Urgency"
-                    options={urgencies.map((u) => ({ id: u.id, label: u.label, note: u.note }))}
-                    value={form.urgency}
-                    onChange={(v) => update("urgency", v as UrgencyId)}
-                  />
+                <div className="space-y-5">
+                  <div>
+                    <IosSectionTitle>Property Type</IosSectionTitle>
+                    <IosGroupCard>
+                      {propertyTypes.map((p) => (
+                        <IosSelectRow
+                          key={p.id}
+                          label={p.label}
+                          active={form.propertyType === p.id}
+                          onClick={() => update("propertyType", p.id as PropertyTypeId)}
+                        />
+                      ))}
+                    </IosGroupCard>
+                  </div>
+
+                  <div>
+                    <IosSectionTitle>Project Size</IosSectionTitle>
+                    <IosGroupCard>
+                      {projectSizes.map((s) => (
+                        <IosSelectRow
+                          key={s.id}
+                          label={s.label}
+                          active={form.size === s.id}
+                          onClick={() => update("size", s.id as ProjectSizeId)}
+                        />
+                      ))}
+                    </IosGroupCard>
+                  </div>
+
+                  <div>
+                    <IosSectionTitle>Repair Complexity</IosSectionTitle>
+                    <IosGroupCard>
+                      {complexities.map((c) => (
+                        <IosSelectRow
+                          key={c.id}
+                          label={c.label}
+                          active={form.complexity === c.id}
+                          onClick={() => update("complexity", c.id as ComplexityId)}
+                        />
+                      ))}
+                    </IosGroupCard>
+                  </div>
+
+                  <div>
+                    <IosSectionTitle>Urgency</IosSectionTitle>
+                    <IosGroupCard>
+                      {urgencies.map((u) => (
+                        <IosSelectRow
+                          key={u.id}
+                          label={u.label}
+                          sublabel={u.note}
+                          active={form.urgency === u.id}
+                          onClick={() => update("urgency", u.id as UrgencyId)}
+                        />
+                      ))}
+                    </IosGroupCard>
+                  </div>
+
                   {estimate && <EstimatePanel estimate={estimate} />}
                 </div>
               )}
 
+              {/* STEP 3: Schedule */}
               {stepName === "Schedule" && (
                 <div className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="booking-date">Preferred date</Label>
-                    <Input
-                      id="booking-date"
-                      type="date"
-                      min={today()}
-                      value={form.date}
-                      onChange={(event) => update("date", event.target.value)}
-                    />
+                  <div>
+                    <IosSectionTitle>Preferred Date</IosSectionTitle>
+                    <IosGroupCard>
+                      <IosInputRow label="Date">
+                        <input
+                          id="booking-date"
+                          type="date"
+                          min={today()}
+                          value={form.date}
+                          onChange={(e) => update("date", e.target.value)}
+                          className="w-full bg-transparent text-[16px] text-foreground focus:outline-none [color-scheme:light_dark]"
+                        />
+                      </IosInputRow>
+                    </IosGroupCard>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Available time slots</Label>
-                    <div className="grid gap-2 sm:grid-cols-2">
+
+                  <div>
+                    <IosSectionTitle>Available Time Slots</IosSectionTitle>
+                    <IosGroupCard>
                       {timeSlots.map((slot) => (
-                        <button
+                        <IosSelectRow
                           key={slot}
-                          type="button"
+                          label={slot}
+                          active={form.timeSlot === slot}
                           onClick={() => update("timeSlot", slot)}
-                          className={cn(
-                            "rounded-md border px-3.5 py-2.5 text-sm transition-colors",
-                            form.timeSlot === slot
-                              ? "border-brand bg-brand/10 text-foreground"
-                              : "border-border bg-card text-card-foreground hover:border-brand/50",
-                          )}
-                        >
-                          {slot}
-                        </button>
+                        />
                       ))}
-                    </div>
+                    </IosGroupCard>
                   </div>
+
                   {isEmergency && (
-                    <p className="flex items-start gap-2 rounded-md bg-destructive/10 p-3 text-xs text-foreground">
-                      <AlertTriangle className="mt-0.5 size-4 shrink-0 text-destructive" />
-                      For active leaks, storm damage or safety hazards, call{" "}
-                      <a href={business.phoneHref} className="font-semibold underline">
-                        {business.phone}
-                      </a>{" "}
-                      right away — we'll respond faster by phone.
-                    </p>
+                    <div className="rounded-[14px] bg-destructive/10 border border-destructive/20 p-4 text-[14px] text-foreground flex items-start gap-3">
+                      <AlertTriangle className="size-5 shrink-0 text-destructive mt-0.5" />
+                      <div>
+                        <p className="font-medium text-destructive">Emergency Request</p>
+                        <p className="text-muted-foreground mt-0.5 text-[13px] leading-relaxed">
+                          For active leaks, storm damage, or safety hazards, call{" "}
+                          <a href={business.phoneHref} className="font-semibold underline text-foreground">
+                            {business.phone}
+                          </a>{" "}
+                          immediately for the fastest dispatch.
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
               )}
 
+              {/* STEP 4: Photos & Address */}
               {stepName === "Photos & address" && (
                 <div className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="booking-address">Property address</Label>
-                    <Input
-                      id="booking-address"
-                      placeholder="123 Pine St, Longview, TX 75604"
-                      value={form.address}
-                      onChange={(event) => update("address", event.target.value)}
-                    />
+                  <div>
+                    <IosSectionTitle>Property Address</IosSectionTitle>
+                    <IosGroupCard>
+                      <IosInputRow label="Address">
+                        <input
+                          id="booking-address"
+                          value={form.address}
+                          onChange={(e) => update("address", e.target.value)}
+                          placeholder="123 Pine St, Longview, TX 75604"
+                          className="w-full bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                        />
+                      </IosInputRow>
+                    </IosGroupCard>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Project photos (optional)</Label>
-                    <PhotoUpload
-                      photos={form.photos}
-                      onChange={(photos) => update("photos", photos)}
-                    />
+
+                  <div>
+                    <IosSectionTitle subtitle="Attach pictures to help us provide a precise quote and arrive with the exact tools.">
+                      Project Photos (Optional)
+                    </IosSectionTitle>
+                    <IosGroupCard className="p-3">
+                      <PhotoUpload photos={form.photos} onChange={(photos) => update("photos", photos)} />
+                    </IosGroupCard>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="booking-notes">Project notes</Label>
-                    <Textarea
-                      id="booking-notes"
-                      rows={4}
-                      placeholder="Anything we should know — access, materials, timing, problem history."
-                      value={form.notes}
-                      onChange={(event) => update("notes", event.target.value)}
-                    />
+
+                  <div>
+                    <IosSectionTitle>Project Notes</IosSectionTitle>
+                    <IosGroupCard>
+                      <textarea
+                        id="booking-notes"
+                        rows={3}
+                        placeholder="Anything we should know — access instructions, materials on hand, timing, problem history."
+                        value={form.notes}
+                        onChange={(e) => update("notes", e.target.value)}
+                        className="w-full bg-transparent px-4 py-3 text-[16px] text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none"
+                      />
+                    </IosGroupCard>
                   </div>
                 </div>
               )}
 
+              {/* STEP 5: Your Details */}
               {stepName === "Your details" && (
                 <div className="space-y-5">
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="booking-name">Full name</Label>
-                      <Input
-                        id="booking-name"
-                        value={form.name}
-                        onChange={(event) => update("name", event.target.value)}
-                        placeholder="Jane Doe"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="booking-phone">Phone</Label>
-                      <Input
-                        id="booking-phone"
-                        type="tel"
-                        value={form.phone}
-                        onChange={(event) => update("phone", event.target.value)}
-                        placeholder="(903) 555-0134"
-                      />
-                    </div>
+                  <div>
+                    <IosSectionTitle>Contact Information</IosSectionTitle>
+                    <IosGroupCard>
+                      <IosInputRow label="Full Name">
+                        <input
+                          id="booking-name"
+                          value={form.name}
+                          onChange={(e) => update("name", e.target.value)}
+                          placeholder="Jane Doe"
+                          className="w-full bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                        />
+                      </IosInputRow>
+                      <IosInputRow label="Phone">
+                        <input
+                          id="booking-phone"
+                          type="tel"
+                          value={form.phone}
+                          onChange={(e) => update("phone", e.target.value)}
+                          placeholder="(903) 555-0134"
+                          className="w-full bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                        />
+                      </IosInputRow>
+                      <IosInputRow label="Email">
+                        <input
+                          id="booking-email"
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => update("email", e.target.value)}
+                          placeholder="you@email.com"
+                          className="w-full bg-transparent text-[16px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                        />
+                      </IosInputRow>
+                    </IosGroupCard>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="booking-email">Email</Label>
-                    <Input
-                      id="booking-email"
-                      type="email"
-                      value={form.email}
-                      onChange={(event) => update("email", event.target.value)}
-                      placeholder="you@email.com"
-                    />
+
+                  <div>
+                    <IosSectionTitle>Preferred Contact Method</IosSectionTitle>
+                    <IosGroupCard>
+                      {(["Phone call", "Text message", "Email"] as const).map((method) => (
+                        <IosSelectRow
+                          key={method}
+                          label={method}
+                          active={form.preferredContact === method}
+                          onClick={() => update("preferredContact", method)}
+                        />
+                      ))}
+                    </IosGroupCard>
                   </div>
-                  <OptionGroup
-                    label="Preferred contact method"
-                    options={[
-                      { id: "Phone call", label: "Phone call" },
-                      { id: "Text message", label: "Text message" },
-                      { id: "Email", label: "Email" },
-                    ]}
-                    value={form.preferredContact}
-                    onChange={(v) => update("preferredContact", v as FormState["preferredContact"])}
-                  />
                 </div>
               )}
 
+              {/* STEP 6: Review */}
               {stepName === "Review" && (
                 <div className="space-y-5">
                   {estimate && <EstimatePanel estimate={estimate} />}
-                  <dl className="divide-y divide-border rounded-lg border border-border bg-card">
-                    <SummaryRow label="Services" value={form.services.map(serviceLabel).join(", ")} />
-                    <SummaryRow
-                      label="Property"
-                      value={`${propertyTypes.find((p) => p.id === form.propertyType)!.label} · ${
-                        projectSizes.find((s) => s.id === form.size)!.label
-                      }`}
-                    />
-                    <SummaryRow
-                      label="Urgency"
-                      value={urgencies.find((u) => u.id === form.urgency)!.label}
-                    />
-                    {needsSchedule && (
-                      <SummaryRow label="Date & time" value={`${form.date} · ${form.timeSlot}`} />
-                    )}
-                    <SummaryRow label="Address" value={form.address} />
-                    <SummaryRow
-                      label="Contact"
-                      value={`${form.name} · ${form.phone} · ${form.email} · prefers ${form.preferredContact.toLowerCase()}`}
-                    />
-                    {form.notes && <SummaryRow label="Notes" value={form.notes} />}
-                  </dl>
+
+                  <div>
+                    <IosSectionTitle>Booking Summary</IosSectionTitle>
+                    <IosGroupCard>
+                      <IosSummaryRow label="Services" value={form.services.map(serviceLabel).join(", ")} />
+                      <IosSummaryRow
+                        label="Property"
+                        value={`${propertyTypes.find((p) => p.id === form.propertyType)?.label ?? ""} · ${
+                          projectSizes.find((s) => s.id === form.size)?.label ?? ""
+                        }`}
+                      />
+                      <IosSummaryRow
+                        label="Urgency"
+                        value={urgencies.find((u) => u.id === form.urgency)?.label ?? ""}
+                      />
+                      {needsSchedule && (
+                        <IosSummaryRow label="Schedule" value={`${form.date} · ${form.timeSlot}`} />
+                      )}
+                      <IosSummaryRow label="Address" value={form.address} />
+                      <IosSummaryRow
+                        label="Contact"
+                        value={`${form.name} · ${form.phone} · ${form.email} (prefers ${form.preferredContact.toLowerCase()})`}
+                      />
+                      {form.notes && <IosSummaryRow label="Notes" value={form.notes} />}
+                    </IosGroupCard>
+                  </div>
 
                   {form.photos.length > 0 && (
                     <div>
-                      <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                        Photos ({form.photos.length})
-                      </p>
-                      <ul className="mt-2 grid grid-cols-4 gap-2">
+                      <IosSectionTitle>Photos ({form.photos.length})</IosSectionTitle>
+                      <div className="grid grid-cols-4 gap-2 px-1">
                         {form.photos.map((photo) => (
-                          <li key={photo.id} className="overflow-hidden rounded-md border border-border">
-                            <img src={photo.url} alt={photo.name} className="h-16 w-full object-cover" />
-                          </li>
+                          <div
+                            key={photo.id}
+                            className="aspect-square overflow-hidden rounded-[10px] border border-border/60 shadow-sm"
+                          >
+                            <img src={photo.url} alt={photo.name} className="h-full w-full object-cover" />
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>
               )}
 
+              {/* Error Callout */}
               {error && (
-                <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                  {error}
-                </p>
+                <div className="rounded-[12px] bg-destructive/10 border border-destructive/20 px-3.5 py-2.5 text-[14px] text-destructive flex items-center gap-2">
+                  <AlertTriangle className="size-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
               )}
 
-              <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <Button
-                  variant="ghost"
-                  onClick={back}
-                  disabled={step === 0 || submitting}
-                  className="sm:w-auto"
-                >
-                  <ArrowLeft className="size-4" /> Back
-                </Button>
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <Button variant="outline" size="lg" asChild>
-                    <a href={business.phoneHref}>
-                      <Phone className="size-4" /> Call Now
-                    </a>
-                  </Button>
-                  {step < steps.length - 1 ? (
-                    <Button variant="brand" size="lg" onClick={next}>
-                      Continue <ArrowRight className="size-4" />
-                    </Button>
-                  ) : (
-                    <Button variant="brand" size="lg" onClick={submit} disabled={submitting}>
-                      {submitting ? (
-                        <>
-                          <Loader2 className="size-4 animate-spin" /> Sending…
-                        </>
-                      ) : (
-                        <>
-                          <Send className="size-4" /> {modeCopy[mode].cta}
-                        </>
-                      )}
-                    </Button>
-                  )}
+              {/* Bottom Action Controls */}
+              <div className="pt-2 pb-6 space-y-2.5">
+                {step < steps.length - 1 ? (
+                  <button
+                    type="button"
+                    onClick={next}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-[14px] bg-[#007AFF] dark:bg-[#0A84FF] text-white font-medium text-[17px] shadow-sm hover:opacity-95 active:opacity-85 transition-opacity"
+                  >
+                    Continue
+                    <ArrowRight className="size-4 stroke-[2.5]" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={submit}
+                    disabled={submitting}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-[14px] bg-[#007AFF] dark:bg-[#0A84FF] text-white font-medium text-[17px] shadow-sm hover:opacity-95 active:opacity-85 transition-opacity disabled:opacity-40"
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="size-5 animate-spin" />
+                        <span>Sending Request…</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="size-4" />
+                        <span>{modeCopy[mode].cta}</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                <div className="flex items-center justify-center">
+                  <a
+                    href={business.phoneHref}
+                    className="inline-flex items-center gap-1.5 text-[15px] text-[#007AFF] dark:text-[#0A84FF] font-normal py-1 hover:opacity-80 active:opacity-50 transition-opacity"
+                  >
+                    <Phone className="size-4" />
+                    <span>Call {business.phone} directly</span>
+                  </a>
                 </div>
               </div>
             </div>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
 
-function OptionGroup({
+function IosSectionTitle({ children, subtitle }: { children: ReactNode; subtitle?: ReactNode }) {
+  return (
+    <div className="px-3 mb-1.5 mt-4 first:mt-1">
+      <h3 className="text-[13px] font-normal uppercase tracking-wider text-[#6C6C70] dark:text-[#8E8E93]">
+        {children}
+      </h3>
+      {subtitle && (
+        <p className="text-[13px] text-[#6C6C70] dark:text-[#8E8E93] mt-0.5 leading-snug">
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function IosGroupCard({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "bg-white dark:bg-[#1C1C1E] rounded-[13px] sm:rounded-[14px] border border-[#E5E5EA] dark:border-[#2C2C2E] shadow-sm overflow-hidden divide-y divide-[#E5E5EA] dark:divide-[#2C2C2E]",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+function IosSelectRow({
   label,
-  options,
-  value,
-  onChange,
-  columns = false,
+  sublabel,
+  note,
+  active,
+  onClick,
 }: {
   label: string;
-  options: { id: string; label: string; note?: string }[];
-  value: string;
-  onChange: (value: string) => void;
-  columns?: boolean;
+  sublabel?: string;
+  note?: string;
+  active: boolean;
+  onClick: () => void;
 }) {
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      <div className={cn("grid gap-2", columns ? "sm:grid-cols-2" : "sm:grid-cols-3")}>
-        {options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => onChange(option.id)}
-            className={cn(
-              "rounded-md border px-3.5 py-2.5 text-left text-sm transition-colors",
-              value === option.id
-                ? "border-brand bg-brand/10 text-foreground"
-                : "border-border bg-card text-card-foreground hover:border-brand/50",
-            )}
-          >
-            <span className="block font-medium">{option.label}</span>
-            {option.note && (
-              <span className="mt-0.5 block text-xs text-muted-foreground">{option.note}</span>
-            )}
-          </button>
-        ))}
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full flex items-center justify-between min-h-[46px] px-4 py-3 text-left transition-colors active:bg-[#F2F2F7] dark:active:bg-[#2C2C2E]"
+    >
+      <div className="min-w-0 flex-1 pr-3">
+        <span className="block text-[16px] font-normal text-foreground leading-snug">
+          {label}
+        </span>
+        {sublabel && (
+          <span className="block text-[13px] text-[#6C6C70] dark:text-[#8E8E93] mt-0.5 leading-snug">
+            {sublabel}
+          </span>
+        )}
+        {note && (
+          <span className="block text-[12px] text-muted-foreground mt-0.5">
+            {note}
+          </span>
+        )}
       </div>
+      {active && (
+        <Check className="size-5 text-[#007AFF] dark:text-[#0A84FF] stroke-[2.5] shrink-0" />
+      )}
+    </button>
+  );
+}
+
+function IosInputRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex items-center min-h-[46px] px-4 py-2.5 gap-3">
+      <span className="text-[16px] font-medium text-foreground w-28 shrink-0">
+        {label}
+      </span>
+      <div className="flex-1 min-w-0">{children}</div>
+    </div>
+  );
+}
+
+function IosSummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between min-h-[44px] px-4 py-3 gap-4">
+      <span className="text-[15px] text-[#6C6C70] dark:text-[#8E8E93] shrink-0">
+        {label}
+      </span>
+      <span className="text-[15px] font-normal text-foreground text-right break-words flex-1">
+        {value}
+      </span>
     </div>
   );
 }
@@ -616,37 +825,39 @@ export function EstimatePanel({
   estimate: NonNullable<ReturnType<typeof calculateEstimate>>;
 }) {
   return (
-    <div className="rounded-lg border border-brand/30 bg-brand/5 p-5">
-      <p className="eyebrow">Estimated range</p>
-      <p className="mt-2 font-display text-3xl text-foreground">
-        {currency(estimate.low)} – {currency(estimate.high)}
-      </p>
-      <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-        <p className="flex items-center gap-2 text-muted-foreground">
-          <Clock className="size-4 text-brand" /> {estimate.duration}
-        </p>
-        <p className="flex items-center gap-2 text-muted-foreground">
-          <CalendarDays className="size-4 text-brand" /> Start {estimate.leadTime}
-        </p>
-        {estimate.recommended && (
-          <p className="flex items-center gap-2 text-muted-foreground">
-            <Sparkles className="size-4 text-brand" /> {estimate.recommended}
+    <div className="mt-4">
+      <IosSectionTitle>Estimated Ballpark</IosSectionTitle>
+      <IosGroupCard className="p-4 space-y-3">
+        <div>
+          <span className="text-[12px] uppercase tracking-wider text-[#6C6C70] dark:text-[#8E8E93] font-medium">
+            Approximate Range
+          </span>
+          <p className="text-3xl font-semibold text-foreground tracking-tight mt-0.5">
+            {currency(estimate.low)} – {currency(estimate.high)}
           </p>
-        )}
-      </div>
-      <p className="mt-4 text-xs text-muted-foreground">
-        Estimates are approximate and based on typical East Texas projects. Final pricing is
-        confirmed in your free on-site estimate.
-      </p>
-    </div>
-  );
-}
+        </div>
 
-function SummaryRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid gap-1 px-4 py-3 sm:grid-cols-[9rem_1fr]">
-      <dt className="text-xs uppercase tracking-widest text-muted-foreground">{label}</dt>
-      <dd className="text-sm text-card-foreground">{value}</dd>
+        <div className="pt-2 border-t border-[#E5E5EA] dark:border-[#2C2C2E] grid gap-2 text-[14px]">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Clock className="size-4 text-[#007AFF] dark:text-[#0A84FF]" />
+            <span>Estimated time: {estimate.duration}</span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <CalendarDays className="size-4 text-[#007AFF] dark:text-[#0A84FF]" />
+            <span>Earliest start: {estimate.leadTime}</span>
+          </div>
+          {estimate.recommended && (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Sparkles className="size-4 text-[#007AFF] dark:text-[#0A84FF]" />
+              <span>{estimate.recommended}</span>
+            </div>
+          )}
+        </div>
+
+        <p className="text-[12px] text-[#6C6C70] dark:text-[#8E8E93] pt-1 leading-snug">
+          Estimates are approximate and based on typical East Texas projects. Final pricing is confirmed in your free on-site estimate.
+        </p>
+      </IosGroupCard>
     </div>
   );
 }
@@ -665,55 +876,73 @@ function Confirmation({
   onClose: () => void;
 }) {
   return (
-    <div className="animate-fade-up space-y-6">
-      <div className="text-center">
-        <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand/15">
-          <CheckCircle2 className="size-7 text-brand" />
+    <div className="space-y-5 animate-in fade-in-50 duration-200 py-2">
+      <div className="text-center pt-2">
+        <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#34C759]/15 text-[#34C759]">
+          <CheckCircle2 className="size-8 stroke-[2.5]" />
         </span>
-        <h3 className="mt-4 font-display text-2xl uppercase tracking-wide text-foreground">
-          {mode === "emergency" ? "Emergency request received" : "You're on the schedule"}
+        <h3 className="mt-3 text-2xl font-bold tracking-tight text-foreground">
+          {mode === "emergency" ? "Emergency Request Received" : "You're on the Schedule"}
         </h3>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-1 text-[15px] text-muted-foreground">
           A confirmation email is on its way to {form.email}.
         </p>
-        <p className="mt-3 inline-flex items-center rounded-full border border-brand/40 bg-brand/10 px-4 py-1.5 font-display text-sm uppercase tracking-widest text-foreground">
+        <p className="mt-3 inline-flex items-center rounded-full bg-[#007AFF]/10 border border-[#007AFF]/25 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#007AFF] dark:text-[#0A84FF]">
           Booking ID · {bookingId}
         </p>
       </div>
 
-      <dl className="divide-y divide-border rounded-lg border border-border bg-card">
-        <SummaryRow label="Services" value={form.services.map(serviceLabel).join(", ")} />
-        {form.date && <SummaryRow label="Date" value={form.date} />}
-        {form.timeSlot && <SummaryRow label="Time" value={form.timeSlot} />}
-        <SummaryRow label="Customer" value={`${form.name} · ${form.phone}`} />
-        <SummaryRow label="Address" value={form.address} />
-        {estimateText && <SummaryRow label="Estimated cost" value={`${estimateText} (approximate)`} />}
-        <SummaryRow label="Photos" value={`${form.photos.length} attached`} />
-      </dl>
-
-      <div className="rounded-lg border border-border bg-muted/40 p-5">
-        <p className="eyebrow">What happens next</p>
-        <ol className="mt-3 space-y-2 text-sm text-muted-foreground">
-          <li>1. We review your details and photos.</li>
-          <li>2. You get a call or text to confirm the visit window.</li>
-          <li>3. We arrive on time with a written estimate before any work starts.</li>
-        </ol>
+      <div>
+        <IosSectionTitle>Appointment Details</IosSectionTitle>
+        <IosGroupCard>
+          <IosSummaryRow label="Services" value={form.services.map(serviceLabel).join(", ")} />
+          {form.date && <IosSummaryRow label="Date" value={form.date} />}
+          {form.timeSlot && <IosSummaryRow label="Time" value={form.timeSlot} />}
+          <IosSummaryRow label="Customer" value={`${form.name} · ${form.phone}`} />
+          <IosSummaryRow label="Address" value={form.address} />
+          {estimateText && <IosSummaryRow label="Estimated cost" value={`${estimateText} (approximate)`} />}
+          {form.photos.length > 0 && <IosSummaryRow label="Photos" value={`${form.photos.length} attached`} />}
+        </IosGroupCard>
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Button variant="brand" size="lg" asChild className="sm:flex-1">
+      <div>
+        <IosSectionTitle>What Happens Next</IosSectionTitle>
+        <IosGroupCard className="p-4">
+          <ol className="space-y-2.5 text-[14px] text-muted-foreground">
+            <li className="flex items-start gap-2">
+              <span className="font-semibold text-foreground">1.</span>
+              <span>We review your project details and attached photos.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="font-semibold text-foreground">2.</span>
+              <span>You receive a quick phone call or text to confirm your arrival window.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="font-semibold text-foreground">3.</span>
+              <span>We arrive on time with written terms before any work begins.</span>
+            </li>
+          </ol>
+        </IosGroupCard>
+      </div>
+
+      <div className="pt-2 pb-4 space-y-2.5">
+        <Button variant="brand" size="lg" asChild className="w-full rounded-[14px] py-3.5 text-[16px]">
           <a href={business.phoneHref}>
             <Phone className="size-4" /> Call {business.phone}
           </a>
         </Button>
-        <Button variant="outline" size="lg" asChild className="sm:flex-1">
+        <Button variant="outline" size="lg" asChild className="w-full rounded-[14px] py-3.5 text-[16px]">
           <a href={business.mapsDirections} target="_blank" rel="noreferrer">
             <MapPin className="size-4" /> Get Directions
           </a>
         </Button>
-        <Button variant="ghost" size="lg" onClick={onClose}>
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-full py-2.5 text-[16px] text-[#007AFF] dark:text-[#0A84FF] font-medium hover:opacity-75 active:opacity-40 transition-opacity text-center"
+        >
           Done
-        </Button>
+        </button>
       </div>
     </div>
   );

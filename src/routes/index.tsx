@@ -5,7 +5,6 @@ import { Services } from "@/components/site/Services";
 import { About, CraftsmanshipBand, Work } from "@/components/site/Sections";
 import { Estimate, ServiceArea } from "@/components/site/Contact";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { BookingProvider } from "@/components/site/booking/BookingProvider";
 import { CostCalculator } from "@/components/site/CostCalculator";
 import { EmergencyBanner } from "@/components/site/EmergencyBanner";
 import { GoogleReviews } from "@/components/site/trust/GoogleReviews";
@@ -119,25 +118,23 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <BookingProvider>
-      <div className="min-h-screen bg-background">
-        <SiteHeader />
-        <main>
-          <Hero />
-          <EmergencyBanner />
-          <Services />
-          <FeaturedServicesShowcase />
-          <HowItWorks />
-          <CostCalculator />
-          <About />
-          <CraftsmanshipBand />
-          <Work />
-          <GoogleReviews />
-          <ServiceArea />
-          <Estimate />
-        </main>
-        <SiteFooter />
-      </div>
-    </BookingProvider>
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <main>
+        <Hero />
+        <EmergencyBanner />
+        <Services />
+        <FeaturedServicesShowcase />
+        <HowItWorks />
+        <CostCalculator />
+        <About />
+        <CraftsmanshipBand />
+        <Work />
+        <GoogleReviews />
+        <ServiceArea />
+        <Estimate />
+      </main>
+      <SiteFooter />
+    </div>
   );
 }
