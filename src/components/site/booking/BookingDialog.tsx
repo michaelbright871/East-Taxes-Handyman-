@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useCallback, type ReactNode } from "react";
 import {
   AlertTriangle,
   CalendarDays,
@@ -117,7 +117,6 @@ export function BookingDialog({
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const handleClose = useCallback(() => {
     if (onClose) {
@@ -138,11 +137,6 @@ export function BookingDialog({
     setBookingId(null);
     setSubmitting(false);
   }, [open, mode, presetServiceId]);
-
-  useEffect(() => {
-    if (!scrollContainerRef.current) return;
-    scrollContainerRef.current.scrollTop = 0;
-  }, [stepName, bookingId, open]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -306,7 +300,7 @@ export function BookingDialog({
               <button
                 type="button"
                 onClick={back}
-                className="inline-flex items-center gap-0.5 text-[17px] font-normal text-foreground hover:opacity-75 active:opacity-40 transition-opacity"
+                className="inline-flex items-center gap-0.5 text-[17px] font-normal text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity"
               >
                 <ChevronLeft className="size-5 -ml-1.5 stroke-[2.5]" />
                 Back
@@ -315,7 +309,7 @@ export function BookingDialog({
               <button
                 type="button"
                 onClick={handleClose}
-                className="text-[17px] font-normal text-foreground hover:opacity-75 active:opacity-40 transition-opacity"
+                className="text-[17px] font-normal text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity"
               >
                 Cancel
               </button>
@@ -338,7 +332,7 @@ export function BookingDialog({
               <button
                 type="button"
                 onClick={handleClose}
-                className="text-[17px] font-semibold text-foreground hover:opacity-75 active:opacity-40 transition-opacity"
+                className="text-[17px] font-semibold text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity"
               >
                 Done
               </button>
@@ -346,7 +340,7 @@ export function BookingDialog({
               <button
                 type="button"
                 onClick={next}
-                className="text-[17px] font-semibold text-foreground hover:opacity-75 active:opacity-40 transition-opacity"
+                className="text-[17px] font-semibold text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity"
               >
                 Next
               </button>
@@ -355,7 +349,7 @@ export function BookingDialog({
                 type="button"
                 onClick={submit}
                 disabled={submitting}
-                className="inline-flex items-center justify-end text-[17px] font-semibold text-foreground hover:opacity-75 active:opacity-40 transition-opacity disabled:opacity-40"
+                className="inline-flex items-center justify-end text-[17px] font-semibold text-[#007AFF] dark:text-[#0A84FF] hover:opacity-75 active:opacity-40 transition-opacity disabled:opacity-40"
               >
                 {submitting ? <Loader2 className="size-4 animate-spin" /> : "Done"}
               </button>
@@ -367,14 +361,14 @@ export function BookingDialog({
         {!bookingId && (
           <div className="h-[2px] w-full bg-[#E5E5EA] dark:bg-[#2C2C2E] overflow-hidden shrink-0">
             <div
-              className="h-full bg-foreground transition-all duration-300 ease-out"
+              className="h-full bg-[#007AFF] dark:bg-[#0A84FF] transition-all duration-300 ease-out"
               style={{ width: `${((step + 1) / steps.length) * 100}%` }}
             />
           </div>
         )}
 
         {/* Scrollable iOS Content Body */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-5 overscroll-contain">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 overscroll-contain">
           {bookingId ? (
             <Confirmation
               bookingId={bookingId}
@@ -682,7 +676,7 @@ export function BookingDialog({
                   <button
                     type="button"
                     onClick={next}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-[14px] bg-foreground text-background font-medium text-[17px] shadow-sm hover:opacity-95 active:opacity-85 transition-opacity"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-[14px] bg-[#007AFF] dark:bg-[#0A84FF] text-white font-medium text-[17px] shadow-sm hover:opacity-95 active:opacity-85 transition-opacity"
                   >
                     Continue
                     <ArrowRight className="size-4 stroke-[2.5]" />
@@ -692,7 +686,7 @@ export function BookingDialog({
                     type="button"
                     onClick={submit}
                     disabled={submitting}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-[14px] bg-foreground text-background font-medium text-[17px] shadow-sm hover:opacity-95 active:opacity-85 transition-opacity disabled:opacity-40"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-[14px] bg-[#007AFF] dark:bg-[#0A84FF] text-white font-medium text-[17px] shadow-sm hover:opacity-95 active:opacity-85 transition-opacity disabled:opacity-40"
                   >
                     {submitting ? (
                       <>
