@@ -5,7 +5,6 @@ import { ArrowLeft, Loader2, Mail, ShieldCheck } from "lucide-react";
 import logoUrl from "@/assets/logo.png";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,16 +107,30 @@ function AuthPage() {
 
   const handleGoogle = async () => {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}${destination}`,
-    });
-    if (result.error) {
+
+    try {
+      const siteUrl = (import.meta.env.VITE_SITE_URL ?? window.location.origin).replace(/\/$/, "");
+      const redirectTo = new URL(destination, siteUrl).toString();
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo,
+        },
+      });
+
+      if (error) throw error;
+      if (data.url) {
+        window.location.assign(data.url);
+        return;
+      }
+
+      void navigate({ to: destination as never, replace: true });
+    } catch (err) {
+      console.error("Google sign-in failed:", err);
       toast.error("Google sign-in failed. Please try again.");
+    } finally {
       setBusy(false);
-      return;
     }
-    if (result.redirected) return;
-    void navigate({ to: destination as never, replace: true });
   };
 
   return (
